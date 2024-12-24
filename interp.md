@@ -38,14 +38,14 @@ implicit constraint solving and search in the `faster-miniKanren`
 implementation, we can use the flexibility of relational programming to
 allow us to experiment with programs in the language being interpreted.
 For example, a relational interpreter can interpret a program with
-missing subexpressions[^1], or holes, attempting to fill in the missing
-subexpressions with values that result in valid programs in the language
-being interpreted. Or we can give both a program containing holes and
-the value we expect the program to produce when interpreted, and let
-`faster-miniKanren` try to fill in the holes in a way to produce the
-expected output. We can even write an interpreter that explicitly
-handles errors, and ask faster-miniKanren to find inputs to the program
-that trigger these errors.[^2]
+missing subexpressions[^1], or *holes*, attempting to fill in the
+missing subexpressions with values that result in valid programs in the
+language being interpreted. Or we can give both a program containing
+holes and the value we expect the program to produce when interpreted,
+and let `faster-miniKanren` try to fill in the holes in a way to produce
+the expected output. We can even write an interpreter that explicitly
+handles errors, and ask `faster-miniKanren` to find inputs to the
+program that trigger these errors.[^2]
 
 ## What you need to know to read this book
 
@@ -73,13 +73,25 @@ my dissertation, and other miniKanren literature.
 Since I know different readers will be coming to this book with very
 different backgrounds, I've added "pretests" to the Scheme and
 miniKanren introduction chapters, to help you determine if you already
-know the concepts will enough to skip ahead. Even if you are a Scheme
+know the concepts well enough to skip ahead. Even if you are a Scheme
 expert, you should probably read the section on pattern matching to make
-sure you understand the syntax and semantics of the pattern-matching
+sure you understand the syntax and semantics of the pattern-matcher
 we'll be using. If you haven't used `faster-miniKanren` before, or a
 miniKanren that supports the `=/=`, `symbolo`, `numbero`, and `absento`
 constraints, I strongly suggest you read the entire introduction to
 miniKanren.
+
+## What is not in this book
+
+One important topic this book does not cover is how to implement a
+miniKanren---for example, how `faster-miniKanren` is implemented. While
+this is an interesting topic, and is especially important for some
+advanced optimizations and for implementing new constraints, this book
+focuses on writing interpreters as relations. There are other resouces
+on implementing simple miniKanrens, such as the papers on microKanren
+\[TODO cite these\], which is the basis for the miniKanren
+implementation in the second edition of *The Reasoned Schemer* \[TODO
+cite\].
 
 ## Running the code in this book
 
@@ -142,6 +154,26 @@ changing default memory limit
 #### Requiring a module in Racket
 
 #### Requiring the `faster-miniKanren` module in Racket
+
+## Acknowledgements
+
+Dan Friedman and Michael Ballantyne both encouraged me to continue
+working on this book, and independently encouraged me to break down one
+giant book into more than one book, each book being more manageable. Dan
+encouraged me to write a short and direct primer on Scheme with only the
+needed parts of the language. Michael also encouraged me to continue
+working on the book in the open.
+
+Darius Bacon wrote me a very helpful email about how using two separate
+lists to represent a lexical environment, rather than a single
+association list, can result in better performance and divergence
+behavior. I had played around with this representation in the past, but
+had abandoned it before I understood its advantages. Thank you, Darius.
+
+My mother has continually encouraged me to work on this book, and most
+importantly, to finish it!
+
+\[TODO add other acknowledgements\]
 
 # Enough Scheme to get by
 
@@ -514,7 +546,7 @@ absento trick to generate more interesting Twines and Thrines
 
 # Open problems
 
-[^1]: Such programs are often called *program sketches*.
+[^1]: Such programs are often called *program sketches* \[TODO cite\].
 
 [^2]: This is known in the literature as "angelic execution".
 

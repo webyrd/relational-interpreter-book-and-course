@@ -79,13 +79,17 @@ Someone who reads this book actively should be ready to understand, implement, m
 This book is about writing interpreters for programming languages, especially for subsets of Scheme.
 While there are many books on writing interpreters, this book is unusual in that it explores
 how to write interpreters as \emph{relations} in the miniKanren relational programming language.
-By writing interpreters as relations, and by using the implicit constraint solving and search in the \texttt{faster-miniKanren} implementation, we can use the flexibility of relational programming to allow us to experiment with programs in the language being interpreted.  For example, a relational interpreter can interpret a program with missing subexpressions\footnote{Such programs are often called \emph{program sketches}.}, or holes, attempting to fill in the missing subexpressions with values that result in valid programs in the language being interpreted.  Or we can give both a program containing holes and the value we expect the program to produce when interpreted, and let \texttt{faster-miniKanren} try to fill in the holes in a way to produce the expected output.  We can even write an interpreter that explicitly handles errors, and ask faster-miniKanren to find inputs to the program that trigger these errors.\footnote{This is known in the literature as ``angelic execution''.}
+By writing interpreters as relations, and by using the implicit constraint solving and search in the \texttt{faster-miniKanren} implementation, we can use the flexibility of relational programming to allow us to experiment with programs in the language being interpreted.  For example, a relational interpreter can interpret a program with missing subexpressions\footnote{Such programs are often called \emph{program sketches} [TODO cite].}, or \emph{holes}, attempting to fill in the missing subexpressions with values that result in valid programs in the language being interpreted.  Or we can give both a program containing holes and the value we expect the program to produce when interpreted, and let \texttt{faster-miniKanren} try to fill in the holes in a way to produce the expected output.  We can even write an interpreter that explicitly handles errors, and ask \texttt{faster-miniKanren} to find inputs to the program that trigger these errors.\footnote{This is known in the literature as ``angelic execution''.}
 
 \section{What you need to know to read this book}
 
 Although this book contains a brief introduction to Scheme, and an introduction to miniKanren, the book is not intended as a tutorial on the fundamentals of programming, nor as an introduction to functional programming.  Similarly, the book is not intended to be a primer on the fundamentals of programming language theory, design, or implementation.  While I do try to explain important Scheme and programming languages concepts as they arise (such as lexical scope, closures, and environment-passing interpreters), I assume the reader has enough experience and knowledge to follow along with minimal examples and explanations of these fundamental concepts.  If you've encountered these ideas before, and just need a little refresher, I hope the level of explanations and examples will be helpful and sufficient.  If you are familiar with functional programming and interpreters, but don't know Scheme, the examples and explanation should also be helpful and sufficient.  If you are familiar with some version of miniKanren or microKanren, the chapters on miniKanren should be helpful, since we'll be using aspects of the \texttt{faster-miniKanren} implementation of miniKanren that extend (and may  differ from) the languages described in the first and second editions of \emph{The Reasoned Schemer}, the microKanren papers, my dissertation, and other miniKanren literature.
 
-Since I know different readers will be coming to this book with very different backgrounds, I've added ``pretests'' to the Scheme and miniKanren introduction chapters, to help you determine if you already know the concepts will enough to skip ahead.  Even if you are a Scheme expert, you should probably read the section on pattern matching to make sure you understand the syntax and semantics of the pattern-matching we'll be using.  If you haven't used \texttt{faster-miniKanren} before, or a miniKanren that supports the \verb|=/=|, \verb|symbolo|, \verb|numbero|, and \verb|absento| constraints, I strongly suggest you read the entire introduction to miniKanren.
+Since I know different readers will be coming to this book with very different backgrounds, I've added ``pretests'' to the Scheme and miniKanren introduction chapters, to help you determine if you already know the concepts well enough to skip ahead.  Even if you are a Scheme expert, you should probably read the section on pattern matching to make sure you understand the syntax and semantics of the pattern-matcher we'll be using.  If you haven't used \texttt{faster-miniKanren} before, or a miniKanren that supports the \verb|=/=|, \verb|symbolo|, \verb|numbero|, and \verb|absento| constraints, I strongly suggest you read the entire introduction to miniKanren.
+
+\section{What is not in this book}
+
+One important topic this book does not cover is how to implement a miniKanren---for example, how \texttt{faster-miniKanren} is implemented.  While this is an interesting topic, and is especially important for some advanced optimizations and for implementing new constraints, this book focuses on writing interpreters as relations.  There are other resouces on implementing simple miniKanrens, such as the papers on microKanren [TODO cite these], which is the basis for the miniKanren implementation in the second edition of \emph{The Reasoned Schemer} [TODO cite].
 
 \section{Running the code in this book}
 
@@ -146,6 +150,20 @@ changing default memory limit
 \subsubsection{Requiring a module in Racket}
 
 \subsubsection{Requiring the \texttt{faster-miniKanren} module in Racket}
+
+\section{Acknowledgements}
+
+Dan Friedman and Michael Ballantyne both encouraged me to continue working on this book, and independently encouraged me to break down one giant book into more than one book, each book being more manageable.
+%
+Dan encouraged me to write a short and direct primer on Scheme with only the needed parts of the language.
+%
+Michael also encouraged me to continue working on the book in the open.
+
+Darius Bacon wrote me a very helpful email about how using two separate lists to represent a lexical environment, rather than a single association list, can result in better performance and divergence behavior.  I had played around with this representation in the past, but had abandoned it before I understood its advantages.  Thank you, Darius.
+
+My mother has continually encouraged me to work on this book, and most importantly, to finish it!
+
+[TODO add other acknowledgements]
 
 
 \mainmatter
