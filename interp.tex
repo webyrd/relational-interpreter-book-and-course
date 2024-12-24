@@ -1,0 +1,527 @@
+\documentclass{book}
+
+\usepackage{alltt}
+\usepackage{calc}
+\usepackage{ccicons} % Creative Commons icons
+\usepackage[colorlinks,linktocpage]{hyperref}
+\usepackage{url}
+
+\newlength{\negspacelength}
+\setlength{\negspacelength}{\bigskipamount+\medskipamount}
+
+\newcommand{\negspace}{\vspace{-\negspacelength}}
+
+\def\whalfspace{\vspace*{0.335\baselineskip}}
+\def\wspace{\vspace*{0.67\baselineskip}}
+\def\nspace{\vspace*{-.7\baselineskip}}
+\def\nspacemargin{\vspace*{-1\baselineskip}}
+
+\begin{document}
+
+\frontmatter
+
+\date{\today}
+
+\title{Relational Interpreters in miniKanren \\ \ \\ (WORKING ROUGH DRAFT --- DRAFT 0)}
+
+\author{William E. Byrd}
+
+\maketitle
+
+{
+  \fontsize{12}{12}
+  \mbox{}
+  \vfill
+
+%  \hrule
+
+\noindent
+\textcopyright~2024 William E. Byrd
+
+
+\noindent
+\huge
+\ccLogo
+\ccAttribution
+\large
+
+
+\noindent
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+(CC BY 4.0) \\
+\url{http://creativecommons.org/licenses/by/4.0/}
+}
+
+\newpage
+
+{
+\ \\
+
+\ \\
+
+\noindent
+\huge
+To Dan Friedman
+}
+
+\newpage
+
+\tableofcontents
+
+\chapter{Preface}
+
+The intent of this book is to share the techniques, knowledge, pitfalls, open problems, promising-looking future work/techniques, and literature of writing interpreters as relations in miniKanren.
+%
+Someone who reads this book actively should be ready to understand, implement, modify, and improve interpreters wtitten as miniKanren relations, read the related literature, and perform original research on the topic.
+
+\section{What this book is about}
+
+This book is about writing interpreters for programming languages, especially for subsets of Scheme.
+While there are many books on writing interpreters, this book is unusual in that it explores
+how to write interpreters as \emph{relations} in the miniKanren relational programming language.
+By writing interpreters as relations, and by using the implicit constraint solving and search in the \texttt{faster-miniKanren} implementation, we can use the flexibility of relational programming to allow us to experiment with programs in the language being interpreted.  For example, a relational interpreter can interpret a program with missing subexpressions\footnote{Such programs are often called \emph{program sketches}.}, or holes, attempting to fill in the missing subexpressions with values that result in valid programs in the language being interpreted.  Or we can give both a program containing holes and the value we expect the program to produce when interpreted, and let \texttt{faster-miniKanren} try to fill in the holes in a way to produce the expected output.  We can even write an interpreter that explicitly handles errors, and ask faster-miniKanren to find inputs to the program that trigger these errors.\footnote{This is known in the literature as ``angelic execution''.}
+
+\section{What you need to know to read this book}
+
+Although this book contains a brief introduction to Scheme, and an introduction to miniKanren, the book is not intended as a tutorial on the fundamentals of programming, nor as an introduction to functional programming.  Similarly, the book is not intended to be a primer on the fundamentals of programming language theory, design, or implementation.  While I do try to explain important Scheme and programming languages concepts as they arise (such as lexical scope, closures, and environment-passing interpreters), I assume the reader has enough experience and knowledge to follow along with minimal examples and explanations of these fundamental concepts.  If you've encountered these ideas before, and just need a little refresher, I hope the level of explanations and examples will be helpful and sufficient.  If you are familiar with functional programming and interpreters, but don't know Scheme, the examples and explanation should also be helpful and sufficient.  If you are familiar with some version of miniKanren or microKanren, the chapters on miniKanren should be helpful, since we'll be using aspects of the \texttt{faster-miniKanren} implementation of miniKanren that extend (and may  differ from) the languages described in the first and second editions of \emph{The Reasoned Schemer}, the microKanren papers, my dissertation, and other miniKanren literature.
+
+Since I know different readers will be coming to this book with very different backgrounds, I've added ``pretests'' to the Scheme and miniKanren introduction chapters, to help you determine if you already know the concepts will enough to skip ahead.  Even if you are a Scheme expert, you should probably read the section on pattern matching to make sure you understand the syntax and semantics of the pattern-matching we'll be using.  If you haven't used \texttt{faster-miniKanren} before, or a miniKanren that supports the \verb|=/=|, \verb|symbolo|, \verb|numbero|, and \verb|absento| constraints, I strongly suggest you read the entire introduction to miniKanren.
+
+\section{Running the code in this book}
+
+The code in this book was tested with Chez Scheme and Racket.  It should be possible to run most code in other Scheme implementations, with few or no changes, with the exception of code that makes extensive use of Chez-specific or Racket-specific features, which I will point out in those chapters, as appropriate.
+
+\subsection{Getting \texttt{pmatch} from GitHub}
+
+\subsection{Getting \texttt{faster-miniKanren} from GitHub}
+
+\url{https://github.com/michaelballantyne/faster-miniKanren}
+
+\begin{alltt}
+git clone git@github.com:michaelballantyne/faster-minikanren.git
+\end{alltt}
+
+Alternatively, you can click on \verb|<> Code| button and select \verb|Download ZIP| to download and uncompress the \texttt{.zip} file containing the entire \texttt{faster-miniKanren} directory.
+
+
+\subsection{Using this book with Chez Scheme}
+
+\subsubsection{Installing Chez Scheme}
+
+\subsubsection{Starting a Chez Scheme REPL}
+
+\subsubsection{Loading a file in Chez Scheme}
+
+\subsubsection{Loading \texttt{faster-miniKanren} in Chez Scheme}
+
+
+\subsection{Using this book with Racket}
+
+\subsubsection{Installing Racket}
+
+\url{https://racket-lang.org/}
+
+\url{https://download.racket-lang.org/}
+
+\subsubsection{Important differences between Chez Scheme and Racket}
+
+representation of quoted values
+
+evaluation order
+
+language levels
+
+macros
+
+\subsubsection{The DrRacket IDE and the Racket REPL}
+
+\subsubsection{Starting and configuring DrRacket}
+
+changing default language
+
+changing default memory limit
+
+\subsubsection{Starting a Racket REPL}
+
+\subsubsection{Requiring a module in Racket}
+
+\subsubsection{Requiring the \texttt{faster-miniKanren} module in Racket}
+
+
+\mainmatter
+
+\chapter{Enough Scheme to get by} %%%%%%%%%%% intro to Scheme %%%%%%%%%%%
+
+We need to know some Scheme, since Scheme is the host language for the \texttt{faster-miniKanren} version of miniKanren we will be using. \texttt{faster-miniKanren} inherits Schemely features such as \texttt{cons} pairs, \texttt{quote}, and \texttt{letrec}.
+
+We also need to know some Scheme because we will be writing interpreters for subsets of Scheme.  In particular, we need to feel comfortable with the evaluation rules for Scheme, including the notions of expressions and values.
+
+And we need to know some Scheme if we want to be able to read much of the miniKanren literature.\footnote{A reading knowledge of OCaml would also be helpful for reading the miniKanren literature that uses OCanren, a miniKanren-like language embedded in OCaml.}
+
+\section{A few comments on Scheme}
+
+small core
+
+compositional
+
+few exceptions to rules
+
+very powerful---lots of ways to do meta-programming, including the
+ability to extend the syntax of the language
+
+great for writing interpreters, compilers, and DSLs
+
+\section{The Scheme reports, versions of Scheme, and implementations of Scheme}
+
+\section{Which version and implementations of Scheme we are using, and why}
+
+\section{What we need to know about Scheme, and when}
+
+\section{Useful Scheme resources}
+
+\section{Pretest}
+
+a ``pre-test'' for Scheme, so the reader can see if they need to read any of this
+
+Even a reader who knows Scheme might want to read the pattern matching section
+
+We also describe a few important differences between Scheme and Racket, to ensure the reader can use either one
+
+\section{Literals}
+
+\subsection{Numbers and numerals}
+
+\subsection{Booleans and truthiness}
+
+\section{Type predicates and procedure application}
+
+number?
+
+boolean?
+
+\section{Expressions and values}
+
+\section{\texttt{if}}
+
+\section{Evaluation order and special forms}
+
+special forms vs. application
+
+keywords
+
+\section{Comments}
+
+\verb|;|
+
+\verb|#;|
+
+\texttt{\#|} and
+\texttt{|\#}
+
+\section{\texttt{cond}}
+
+\section{A few other predicates}
+
+zero?
+
+even?
+
+odd?
+
+\section{\texttt{quote} and symbols}
+
+(quote <datum>) => <datum>
+
+symbol?
+
+\section{Lists}
+
+list
+
+list?
+
+empty list (quoted)
+
+null?
+
+quoted non-empty lists
+
+nested lists
+
+\section{Pairs and improper lists}
+
+cons
+
+pair?
+
+\section{\texttt{define}}
+
+\section{Variables}
+
+variable reference
+
+\section{\texttt{lambda}}
+
+\section{Procedures}
+
+procedure?
+
+variable ref to procs
+
+\section{Equality predicates}
+
+=
+
+eq?
+
+equal?
+
+\section{Simple examples}
+
+\subsection{\texttt{member?}}
+
+\subsection{\texttt{length}}
+
+\subsection{\texttt{append}}
+
+\subsection{\texttt{assoc}}
+
+\section{\texttt{let}}
+
+\section{\texttt{letrec}}
+
+\section{Lexical scope}
+
+\section{More examples}
+
+\subsection{\texttt{append} (\texttt{letrec} version)}
+
+\subsection{\texttt{even?} and \texttt{odd?} (\texttt{define} version)}
+
+\subsection{\texttt{even?} and \texttt{odd?} (\texttt{letrec} version)}
+
+\subsection{Curried adder}
+
+spelling of Curried?
+
+\section{\texttt{eval}}
+
+\section{Pattern matching}
+
+\section{Grammar for our subset of Scheme}
+
+\section{Differences between Scheme and Racket}
+
+evaluation order
+
+printed rep of quoted values
+
+pattern mathing
+
+require vs load
+
+repl usage
+
+eval usage
+
+\section{Exercises}
+
+
+
+\chapter{A whirlwind introduction to relational programming in miniKanren}%%%%%%%%% intro to mk %%%%%%%%%%%%%%%%%%%%%
+
+\section{What is relational programming?}
+
+\section{Which version of miniKanren we are using, and why}
+
+faster-miniKanren without defrel
+
+\section{Useful miniKanren resources}
+
+\section{Pretest}
+
+someone who has read TRS1 or TRS2, or who has implemented microKanren,
+still needs to know about \texttt{=/=}, \texttt{symbolo},
+\texttt{numbero}, \texttt{absento}, and the differences between
+miniKanren in those books and in this book
+
+\section{miniKanren as an embedded DSL, and otherwise}
+
+Scheme as host language
+
+\section{Core miniKanren}
+
+\subsection{\texttt{==}}
+
+simlarity to equal? (but not to eq?)
+
+first-order syntactic unification
+
+\subsection{\texttt{run}$^{n}$}
+
+\subsection{\texttt{conde}}
+
+\subsection{\texttt{fresh}}
+
+\subsection{\texttt{run*}}
+
+\subsection{What miniKanren inherits from Scheme}
+
+\section{Logic variables (or, what does ``variable'' even mean?)}
+
+\section{Expressions and terms}
+
+\section{Groundness, and the parts of Scheme we can safely use}
+
+\section{Relational vs. non-relational programming in miniKanren}
+
+\section{Simple examples}
+
+\subsection{\texttt{appendo}}
+
+\subsection{\texttt{membero} (broken version)}
+
+\section{Other useful constraints}
+
+\subsection{\texttt{=/=}}
+
+disequality
+
+\subsection{\texttt{symbolo} and \texttt{numbero}}
+
+not needed in OCanren, for example
+
+\subsection{\texttt{absento}}
+
+prevention of quoted closures (not needed in OCanren) and other uses,
+such as \texttt{not-in-envo} in split env
+
+\section{miniKanren Grammar}
+
+beware nesting run or ==, calling Scheme eliminators, unifying with procedures, assuming a term is ground, assuming Scheme can handle even ground logic variables as values
+
+revist in style and gotchas chapter
+
+\section{More examples}
+
+\subsection{\texttt{membero} (fixed version)}
+
+\subsection{Differences between the miniKanren in this book and other miniKanrens}
+
+TRS1
+
+TRS2
+
+microKanren
+
+core.logic
+
+OCanren
+
+\subsection{Exercises}
+
+
+\chapter{miniKanren style and common pitfalls}% mK style and pitfalls %%%%%%%%%%%%%%%%%%%%
+
+``Will's Rule''
+
+syntactic issue 1:
+lambda (implicit begin) containing more than one goal expression (without a fresh wrapping those goals)---very hard to debug, since only one of the goals is actually run---defrel prevents this problem
+
+syntactic issue 2:
+nesting a goal expression inside of a call to ==---can actually succeed, although rarely does what you would intend
+
+use of car, cdr, +, etc.
+
+assuming a Scheme function can operate on the value of a ground logic variable
+
+unifying with a Scheme procedure
+
+mixing Scheme and mk code in a way that doesn't preserve relationality
+
+incorrect tagging
+
+\chapter{Debugging miniKanren code}%%%%%%%% debug mK %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Debugging unexpected failure}
+
+leave all args fresh
+
+comment out clauses and goals
+
+\section{Taming and debugging apparent divergence}
+
+\verb|run 1| vs. \verb|run*|
+
+run program with all arguments ground
+
+reordering conjuncts
+
+adding a depth counter
+
+adding bounds (as in rel interp)
+
+tabling
+
+using occur check, presumably?
+
+\section{Debugging interpreters (and interpreter-like programs)}
+
+how to build up a \verb|conde|-based program, such as an interpreter, one expression at a time Dan Friedman-style and then run/test it
+
+run program ``forward'' to test it
+
+perhaps inclue alternative \verb|run| interafce/streaming/alternative set-based test macro
+
+
+\chapter{A simple environment-passing Scheme interpreter in Scheme}% simple Scheme-in-Scheme %%%%%%%%%%
+
+CBV lambda-calc plus quote and cons
+
+a list for env
+
+tagged list to represent closure
+
+grammar for the language we are interpreting
+
+
+\chapter{Rewriting the simple environment-passing Scheme interpreter in miniKanren}% simple Scheme-in-miniKanren %%%%%%%%%%
+
+
+\chapter{Quine time}% Quine time %%%%%%%%%%%%%%%%%%%%%%
+
+McCarthy challenge given in `A Micromanual for LISP'
+
+Quines, Twines, Thrines
+
+absento trick to generate more interesting Twines and Thrines
+
+
+\chapter{Using a two-list representation of the environment}% split environment representation
+
+
+\chapter{Extending the interpreter to handle \texttt{append}}% extended append interpreter
+
+
+\chapter{Adding explicit errors}% explicit errors
+
+
+\chapter{Writing a parser as a relation}% relational parser
+
+
+\chapter{Writing a type inferencer as a relation}% relational type inferencer
+
+
+\chapter{Build your own Barliman}% build your own Barliman
+
+
+\chapter{Speeding up the interpreter}% speeding up the interpreter
+
+
+\chapter{Open problems}% open problems 
+
+
+\appendix
+
+
+\end{document}
