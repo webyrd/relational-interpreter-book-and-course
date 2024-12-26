@@ -242,21 +242,102 @@ If we want to create a symbol to represent the abstract concept of ``love'', we 
 
 In Scheme terminology, \verb|(quote love)| is an \emph{expression}.
 In Scheme, expressions are \emph{evaluated} to produce \emph{values}.
-In this case, the expression \verb|(quote love)| evaluates to the value \verb|love|, which is a symbol. 
+In this case, the expression \verb|(quote love)| evaluates to the value \verb|love|, which is a symbol. [todo consider pointing out that in Racket, by default, \verb|'love| will be displayed, and how to adjust that setting]
 
 All Scheme symbols are values.  Numbers and the Booleans \verb|#f| and \verb|#t| are also values.
 
-[todo show that quote is more general:
+In Scheme we can also quote numbers and Booleans.
+%
+For example, the expression \verb|(quote 5)| evaluates to the value \verb|5|, which is a number.
+%
+Similarly, the expression \verb|(quote #f)| evaluates to the value \verb|#f|, which is a Boolean.
+
+Actually, we don't need to quote numbers or Booleans in Scheme---numbers and Booleans are ``self-evaluating'' (or ``self-quoting'').  For example, the expression \verb|42| evaluates to the value \verb|42|, which is a number.  The expression \verb|#t| evaluates to the value \verb|#t|, which is a Boolean.  Scheme symbols, on the other hand, are not self-evaluating, and must be explicitly quoted.\footnote{Scheme symbols must be explicitly quoted so that they are distinguished syntactically from variable references, which will encounter shortly.}
+
+As shorthand, we write ``the expression \verb|(quote 5)| evaluates to the value \verb|5|'' as:
+
+\verb|(quote 5) => 5|
+
+\noindent
+where the arrow \verb|=>| can be read as ``evaluates to''.
+
+Similarly, we can write
+
+\verb|(quote #f) => #f|
+
+\verb|(quote love) => love|
+
+\verb|'love => love|
+
+\verb|(quote quote) => quote|
+
+\verb|'quote => quote|
+
+\verb|42 => 42|
+
+\verb|6375764356 => 6375764356|
+
+\noindent
+and
+
+\verb|#t => #t|.
+
+\subsection{The general evaluation rule for \texttt{quote}}
+
+We know that 
+
+\verb|(quote 0) => 0|
+
+\verb|(quote 1) => 1|
+
+$\ldots$
+
+\verb|(quote 42) => 42|
+
+$\ldots$
+
+\verb|(quote 3765783657849) => 3765783657849|
+
+$\ldots$
+
+\noindent
+and so forth.
+
+We can generalize our ``evaluates to'' \verb|=>| notation; the more general \emph{evaluation rule} for quoting numbers is:
+
+\verb|(quote <num>) => <num>|
+
+\noindent
+for any number \verb|<num>|.  We use the name \verb|num| surrounded by the angle brackets \verb|<| and \verb|>| to represent any number.
+
+Similarly, the evaluation rule for quoting Booleans is:
+
+\verb|(quote <bool>) => <bool>|
+
+\noindent
+for any Boolean \verb|<bool>|.  (Of course there are only two Boolean values, \verb|#f| and \verb|#t|.)  And the evaluation rule for quoting symbols is 
+
+\verb|(quote <sym>) => <sym>|
+
+\noindent
+for any symbol \verb|<sym>|.
+
+More generally, the evaluation rule for \verb|quote| is:
 
 \verb|(quote <datum>) => <datum>|
-  
- and show that you can also quote numbers and Booleans, and that those expressions evaluate to the numbers or Booleans themselves.  It's not needed to quote these
-``self-evaluating literals'']
 
-[todo could nest quotes: show that even though the expressions 5 and (quote 5) both evaluate to the value 5, the expressions (quote (quote 5)) amd (quote 5) do not evaluate to the same value]
+\noindent
+The word \emph{datum} is the singular form of \emph{data}.  Numbers, Booleans, and symbols are three types of data we have encountered so far.
 
 
+%% [todo could nest quotes: show that even though the expressions 5 and (quote 5) both evaluate to the value 5, the expressions (quote (quote 5)) amd (quote 5) do not evaluate to the same value
 
+%%   (quote cat)
+%%   'cat
+
+%%   (quote (quote cat))
+%%   '(quote cat)
+%% ]
 
 
 %% \section{Expressions, values, and statements}

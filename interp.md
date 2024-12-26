@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-25
+date: 2024-12-26
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -265,22 +265,96 @@ notation `'love` can also be used to produce the symbol `love`.
 In Scheme terminology, `(quote love)` is an *expression*. In Scheme,
 expressions are *evaluated* to produce *values*. In this case, the
 expression `(quote love)` evaluates to the value `love`, which is a
-symbol.
+symbol. \[todo consider pointing out that in Racket, by default, `'love`
+will be displayed, and how to adjust that setting\]
 
 All Scheme symbols are values. Numbers and the Booleans `#f` and `#t`
 are also values.
 
-\[todo show that quote is more general:
+In Scheme we can also quote numbers and Booleans. For example, the
+expression `(quote 5)` evaluates to the value `5`, which is a number.
+Similarly, the expression `(quote #f)` evaluates to the value `#f`,
+which is a Boolean.
+
+Actually, we don't need to quote numbers or Booleans in Scheme---numbers
+and Booleans are "self-evaluating" (or "self-quoting"). For example, the
+expression `42` evaluates to the value `42`, which is a number. The
+expression `#t` evaluates to the value `#t`, which is a Boolean. Scheme
+symbols, on the other hand, are not self-evaluating, and must be
+explicitly quoted.[^4]
+
+As shorthand, we write "the expression `(quote 5)` evaluates to the
+value `5`" as:
+
+`(quote 5) => 5`
+
+where the arrow `=>` can be read as "evaluates to".
+
+Similarly, we can write
+
+`(quote #f) => #f`
+
+`(quote love) => love`
+
+`'love => love`
+
+`(quote quote) => quote`
+
+`'quote => quote`
+
+`42 => 42`
+
+`6375764356 => 6375764356`
+
+and
+
+`#t => #t`.
+
+### The general evaluation rule for `quote`
+
+We know that
+
+`(quote 0) => 0`
+
+`(quote 1) => 1`
+
+$\ldots$
+
+`(quote 42) => 42`
+
+$\ldots$
+
+`(quote 3765783657849) => 3765783657849`
+
+$\ldots$
+
+and so forth.
+
+We can generalize our "evaluates to" `=>` notation; the more general
+*evaluation rule* for quoting numbers is:
+
+`(quote <num>) => <num>`
+
+for any number `<num>`. We use the name `num` surrounded by the angle
+brackets `<` and `>` to represent any number.
+
+Similarly, the evaluation rule for quoting Booleans is:
+
+`(quote <bool>) => <bool>`
+
+for any Boolean `<bool>`. (Of course there are only two Boolean values,
+`#f` and `#t`.) And the evaluation rule for quoting symbols is
+
+`(quote <sym>) => <sym>`
+
+for any symbol `<sym>`.
+
+More generally, the evaluation rule for `quote` is:
 
 `(quote <datum>) => <datum>`
 
-and show that you can also quote numbers and Booleans, and that those
-expressions evaluate to the numbers or Booleans themselves. It's not
-needed to quote these "self-evaluating literals"\]
-
-\[todo could nest quotes: show that even though the expressions 5 and
-(quote 5) both evaluate to the value 5, the expressions (quote (quote
-5)) amd (quote 5) do not evaluate to the same value\]
+The word *datum* is the singular form of *data*. Numbers, Booleans, and
+symbols are three types of data we have encountered so far.
 
 ## `define`
 
@@ -638,3 +712,7 @@ fast environment lookup for environments that are sufficiently ground
 [^3]: A reading knowledge of OCaml would also be helpful for reading the
     miniKanren literature that uses OCanren, a miniKanren-like language
     embedded in OCaml.
+
+[^4]: Scheme symbols must be explicitly quoted so that they are
+    distinguished syntactically from variable references, which will
+    encounter shortly.
