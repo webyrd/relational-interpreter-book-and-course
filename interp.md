@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-24
+date: 2024-12-25
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -211,6 +211,15 @@ great for writing interpreters, compilers, and DSLs
 
 ## Useful Scheme resources
 
+\[todo add full references and URLs; can point to the relevant sections
+as I describe aspects of Scheme\]
+
+The Scheme Programming Language, 4th Edition
+
+The Chez Scheme User's Guide \[TODO check spelling\]
+
+R6RS
+
 ## Pretest
 
 a "pre-test" for Scheme, so the reader can see if they need to read any
@@ -222,21 +231,102 @@ section
 We also describe a few important differences between Scheme and Racket,
 to ensure the reader can use either one
 
-## Literals
+## Numbers
 
-### Numbers and numerals
+In this book we restrict ourselves to non-negative integers, which may
+be of any size:
 
-### Booleans and truthiness
+`5`
+
+`42`
+
+`0`
+
+`37623489762387946782365476`
+
+## Booleans
+
+The Boolean `#f` represents "false", while the Boolean `#t` represents
+"true".
+
+## `quote` and symbols
+
+In addition to numbers and Booleans, Scheme can represent abstract
+concepts and symbolic data using *symbols*, sometimes called *quoted
+symbols*.
+
+If we want to create a symbol to represent the abstract concept of
+"love", we can write `(quote love)` which produces the symbol `love`.
+Because symbols are used so often in Scheme, the equivalent shorthand
+notation `'love` can also be used to produce the symbol `love`.
+
+## Expressions, values, and evaluation
+
+In Scheme terminology, `(quote love)` is an *expression*. In Scheme,
+expressions are *evaluated* to produce *values*. In this case, the
+expression `(quote love)` evaluates to the value `love`, which is a
+symbol.
+
+All Scheme symbols are values. Numbers and the Booleans `#f` and `#t`
+are also values.
+
+\[todo show that quote is more general:
+
+`(quote <datum>) => <datum>`
+
+and show that you can also quote numbers and Booleans, and that those
+expressions evaluate to the numbers or Booleans themselves. It's not
+needed to quote these "self-evaluating literals"\]
+
+\[todo could nest quotes: show that even though the expressions 5 and
+(quote 5) both evaluate to the value 5, the expressions (quote (quote
+5)) amd (quote 5) do not evaluate to the same value\]
+
+## `define`
+
+We can use `define` to name numbers and Booleans.
+
+For example,
+
+`(define x 5)`
+
+gives the name `x` to `5`, while
+
+`(define cats-are-cool #t)`
+
+gives the name `cats-are-cool` to `#t`.
+
+## Variables
+
+variable reference
 
 ## Type predicates and procedure application
 
-number?
+In Scheme, a *predicate* is a procedure that, when called, always
+terminates (without signalling an error), and that always returns one of
+the two Boolean literals: `#f` or `#t`.
 
-boolean?
+A *type predicate* is a predicate that can be used to determine the type
+of a value.
 
-## Expressions and values
+`number?`
+
+It is a Scheme convention to end the names of predicates with a question
+mark. Also by convention, many people "huh?"
+
+`(number? 5) => #t`
+
+`(number? #t) => #f`
+
+`boolean?`
+
+`symbol?`
 
 ## `if`
+
+`#t` is not the only true value in Scheme. In fact, *any* value in
+Scheme other than `#f` is considered true. For example, both `5` and `0`
+are considered true values in Scheme.
 
 ## Evaluation order and special forms
 
@@ -256,27 +346,21 @@ keywords
 
 ## A few other predicates
 
-zero?
+`zero?`
 
-even?
+`even?`
 
-odd?
-
-## `quote` and symbols
-
-(quote \<datum\>) =\> \<datum\>
-
-symbol?
+`odd?`
 
 ## Lists
 
-list
+`list`
 
-list?
+`list?`
 
 empty list (quoted)
 
-null?
+`null?`
 
 quoted non-empty lists
 
@@ -284,31 +368,25 @@ nested lists
 
 ## Pairs and improper lists
 
-cons
+`cons`
 
-pair?
-
-## `define`
-
-## Variables
-
-variable reference
+`pair?`
 
 ## `lambda`
 
 ## Procedures
 
-procedure?
+`procedure?`
 
 variable ref to procs
 
 ## Equality predicates
 
-=
+`=`
 
-eq?
+`eq?`
 
-equal?
+`equal?`
 
 ## Simple examples
 
@@ -356,7 +434,7 @@ require vs load
 
 repl usage
 
-eval usage
+`eval` usage
 
 ## Exercises
 
@@ -543,6 +621,13 @@ absento trick to generate more interesting Twines and Thrines
 # Build your own Barliman
 
 # Speeding up the interpreter
+
+\[restrict to interpreter changes that don't require hacking
+faster-miniKanren or in-depth knowledge of the implementation\]
+
+dynamic reordering of conjuncts, especially for application
+
+fast environment lookup for environments that are sufficiently ground
 
 # Open problems
 

@@ -197,6 +197,14 @@ great for writing interpreters, compilers, and DSLs
 
 \section{Useful Scheme resources}
 
+[todo add full references and URLs; can point to the relevant sections as I describe aspects of Scheme]
+
+The Scheme Programming Language, 4th Edition
+
+The Chez Scheme User's Guide [TODO check spelling]
+
+R6RS
+
 \section{Pretest}
 
 a ``pre-test'' for Scheme, so the reader can see if they need to read any of this
@@ -205,21 +213,108 @@ Even a reader who knows Scheme might want to read the pattern matching section
 
 We also describe a few important differences between Scheme and Racket, to ensure the reader can use either one
 
-\section{Literals}
 
-\subsection{Numbers and numerals}
+%%%%%%%%%%%%%%% begin detailed Scheme description %%%%%%%%%%%%%%%%%
+\section{Numbers}
 
-\subsection{Booleans and truthiness}
+In this book we restrict ourselves to non-negative integers, which may be of any size:
+
+\verb|5|
+
+\verb|42|
+
+\verb|0|
+
+\verb|37623489762387946782365476|
+
+\section{Booleans}
+
+The Boolean \verb|#f| represents ``false'', while
+the Boolean \verb|#t| represents ``true''.
+
+\section{\texttt{quote} and symbols}
+
+In addition to numbers and Booleans, Scheme can represent abstract concepts and symbolic data using \emph{symbols}, sometimes called \emph{quoted symbols}.
+
+If we want to create a symbol to represent the abstract concept of ``love'', we can write \verb|(quote love)| which produces the symbol \verb|love|.  Because symbols are used so often in Scheme, the equivalent shorthand notation \verb|'love| can also be used to produce the symbol \verb|love|.
+
+\section{Expressions, values, and evaluation}
+
+In Scheme terminology, \verb|(quote love)| is an \emph{expression}.
+In Scheme, expressions are \emph{evaluated} to produce \emph{values}.
+In this case, the expression \verb|(quote love)| evaluates to the value \verb|love|, which is a symbol. 
+
+All Scheme symbols are values.  Numbers and the Booleans \verb|#f| and \verb|#t| are also values.
+
+[todo show that quote is more general:
+
+\verb|(quote <datum>) => <datum>|
+  
+ and show that you can also quote numbers and Booleans, and that those expressions evaluate to the numbers or Booleans themselves.  It's not needed to quote these
+``self-evaluating literals'']
+
+[todo could nest quotes: show that even though the expressions 5 and (quote 5) both evaluate to the value 5, the expressions (quote (quote 5)) amd (quote 5) do not evaluate to the same value]
+
+
+
+
+
+%% \section{Expressions, values, and statements}
+
+%% [intro sentence goes here, about Scheme and expressions, values, and statements.  Can add footnote or parenthetical about how in miniKanren we will also have the notion of terms, which generalizes the notion of a value.]
+
+%% The \emph{expression} \verb|x| (which is a variable reference) \emph{evaluates} to the \emph{value} \verb|5| (which is a number).  [todo this sentence has a lot going on] [todo is there a way to introduce a compound expression by this point, so we don't just have variable reference?]
+
+%% The expression \verb|cats-are-cool| (which is a variable reference) evaluates to the value \verb|#t| (which is a Boolean).
+
+%% The definition \verb|(define x 5)| is a statement.
+
+
+
+\section{\texttt{define}}
+
+We can use \verb|define| to name numbers and Booleans.
+
+For example,
+
+\verb|(define x 5)|
+
+gives the name \verb|x| to \verb|5|, while
+
+\verb|(define cats-are-cool #t)|
+
+gives the name \verb|cats-are-cool| to \verb|#t|.
+
+\section{Variables}
+
+variable reference
+
+
 
 \section{Type predicates and procedure application}
 
-number?
+In Scheme, a \emph{predicate} is a procedure that, when called, always terminates (without signalling an error), and that always returns one of the two Boolean literals: \verb|#f| or \verb|#t|.
 
-boolean?
+A \emph{type predicate} is a predicate that can be used to determine the type of a value.
 
-\section{Expressions and values}
+\verb|number?|
+
+It is a Scheme convention to end the names of predicates with a question mark.
+Also by convention, many people ``huh?'' 
+
+\verb|(number? 5) => #t|
+
+\verb|(number? #t) => #f|
+
+\verb|boolean?|
+
+\verb|symbol?|
 
 \section{\texttt{if}}
+
+\verb|#t| is not the only true value in Scheme.
+In fact, \emph{any} value in Scheme other than \verb|#f| is considered true.
+For example, both \verb|5| and \verb|0| are considered true values in Scheme.
 
 \section{Evaluation order and special forms}
 
@@ -240,27 +335,21 @@ keywords
 
 \section{A few other predicates}
 
-zero?
+\verb|zero?|
 
-even?
+\verb|even?|
 
-odd?
-
-\section{\texttt{quote} and symbols}
-
-(quote <datum>) => <datum>
-
-symbol?
+\verb|odd?|
 
 \section{Lists}
 
-list
+\verb|list|
 
-list?
+\verb|list?|
 
 empty list (quoted)
 
-null?
+\verb|null?|
 
 quoted non-empty lists
 
@@ -268,31 +357,25 @@ nested lists
 
 \section{Pairs and improper lists}
 
-cons
+\verb|cons|
 
-pair?
-
-\section{\texttt{define}}
-
-\section{Variables}
-
-variable reference
+\verb|pair?|
 
 \section{\texttt{lambda}}
 
 \section{Procedures}
 
-procedure?
+\verb|procedure?|
 
 variable ref to procs
 
 \section{Equality predicates}
 
-=
+\verb|=|
 
-eq?
+\verb|eq?|
 
-equal?
+\verb|equal?|
 
 \section{Simple examples}
 
@@ -340,7 +423,7 @@ require vs load
 
 repl usage
 
-eval usage
+\verb|eval| usage
 
 \section{Exercises}
 
@@ -534,6 +617,12 @@ absento trick to generate more interesting Twines and Thrines
 
 
 \chapter{Speeding up the interpreter}% speeding up the interpreter
+
+[restrict to interpreter changes that don't require hacking faster-miniKanren or in-depth knowledge of the implementation]
+
+dynamic reordering of conjuncts, especially for application
+
+fast environment lookup for environments that are sufficiently ground
 
 
 \chapter{Open problems}% open problems 
