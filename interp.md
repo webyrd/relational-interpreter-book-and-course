@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-26
+date: 2024-12-27
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -174,6 +174,9 @@ My mother has continually encouraged me to work on this book, and most
 importantly, to finish it!
 
 \[TODO add other acknowledgements\]
+
+\[TODO add acks for typesetting tech, such as the fonts; also can add
+colophon if I'm so inclined\]
 
 # Enough Scheme to get by
 
@@ -356,19 +359,40 @@ More generally, the evaluation rule for `quote` is:
 The word *datum* is the singular form of *data*. Numbers, Booleans, and
 symbols are three types of data we have encountered so far.
 
-## `define`
+## `define` and statements
 
-We can use `define` to name numbers and Booleans.
+We can use `define` to give a name to a value.
 
 For example,
 
 `(define x 5)`
 
-gives the name `x` to `5`, while
+gives the name `x` to the number `5`, while
 
-`(define cats-are-cool #t)`
+`(define cool-cat (quote Sugie))`
 
-gives the name `cats-are-cool` to `#t`.
+gives the name `cool-cat` to the symbol `Sugie`.[^5]
+
+More generally, we can write:
+
+`(define <id> <expr>)`
+
+where `<id>` is any Scheme *identifier* (such as `x`, `my-cat`,
+`Hello_there=137^`, or `関連-137`) and where `<expr>` is any expression.
+
+A use of `define` is called a *definition*.
+
+## Expressions, values, and (now) statements
+
+The definition `(define x 5)` is neither an expression nor a value---it
+is a *statement*. One difference between a statement and an expression
+is that evaluation of expressions produces values, while statements are
+evaluated for their *effects*. The effect of evaluating `(define x 5)`
+is to introduce a new *variable* named `x` that is *bound* to the number
+`5`.[^6]
+
+We have now encountered expressions, values, and statements in
+Scheme.[^7]
 
 ## Variables
 
@@ -407,6 +431,9 @@ are considered true values in Scheme.
 special forms vs. application
 
 keywords
+
+quote and define are keywords; `(quote <datum>)` and
+`(define <id> <expr>)` are special forms.
 
 ## Comments
 
@@ -713,6 +740,19 @@ fast environment lookup for environments that are sufficiently ground
     miniKanren literature that uses OCanren, a miniKanren-like language
     embedded in OCaml.
 
-[^4]: Scheme symbols must be explicitly quoted so that they are
-    distinguished syntactically from variable references, which will
-    encounter shortly.
+[^4]: Scheme symbols must be explicitly quoted so that they are distinct
+    syntactically from variable references, which will encounter
+    shortly.
+
+[^5]: Actually, in Scheme `(define x 5)` gives the name `x` to a
+    *location* that contains the value `5`. It is possible to assign a
+    different value to the location named by `x` using `set!`---for
+    example, `(set! x 6)`. We will avoid the use of `set!` for now,
+    which means we pretend that `define` just gives a name to a value.
+
+[^6]: Actually, the variable `x` is bound to a location that contains
+    the value `5`.
+
+[^7]: miniKanren also has the notions of expressions, values, and
+    statements, and introduces the new notion of *terms*, which
+    generalize the notion of values. \[todo add crossref\]
