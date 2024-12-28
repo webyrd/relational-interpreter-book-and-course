@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-27
+date: 2024-12-28
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -359,7 +359,7 @@ More generally, the evaluation rule for `quote` is:
 The word *datum* is the singular form of *data*. Numbers, Booleans, and
 symbols are three types of data we have encountered so far.
 
-## `define` and statements
+## `define`, definitions, and variables
 
 We can use `define` to give a name to a value.
 
@@ -378,25 +378,91 @@ More generally, we can write:
 `(define <id> <expr>)`
 
 where `<id>` is any Scheme *identifier* (such as `x`, `my-cat`,
-`Hello_there=137^`, or `関連-137`) and where `<expr>` is any expression.
+`Hello_there=137^`, or `関連-42`) and where `<expr>` is any expression.
 
-A use of `define` is called a *definition*.
+A use of `define` is called a *definition*. A definition is neither an
+expression nor a value---it is a *statement*. While evaluation of
+expressions produces values, statements are evaluated for their
+*effects*. The effect of evaluating `(define x 5)` is to introduce a new
+*variable* named `x` that is *bound* to the number `5`.[^6]
 
-## Expressions, values, and (now) statements
+Once we have defined a variable (such as `x`), we can *reference* (or
+*refer to*) that variable to get the value to which it is bound (such as
+the number 5, in the case of the variable `x`).
 
-The definition `(define x 5)` is neither an expression nor a value---it
-is a *statement*. One difference between a statement and an expression
-is that evaluation of expressions produces values, while statements are
-evaluated for their *effects*. The effect of evaluating `(define x 5)`
-is to introduce a new *variable* named `x` that is *bound* to the number
-`5`.[^6]
+We can see the behavior of `define` and variable reference at the Chez
+Scheme Read-Eval-Print Loop, or *REPL*. First we start Chez Scheme, and
+then define `x` to be `5`:
 
-We have now encountered expressions, values, and statements in
-Scheme.[^7]
+`Chez``\ `{=latex}`Scheme``\ `{=latex}`Version``\ `{=latex}`10.1.0`\
+`Copyright``\ `{=latex}`1984-2024``\ `{=latex}`Cisco``\ `{=latex}`Systems,``\ `{=latex}`Inc.`
 
-## Variables
+`>``\ `{=latex}`(define``\ `{=latex}`x``\ `{=latex}`5)`\
+`>`
 
-variable reference
+Now that we have defined the variable `x`, we can refer to it:
+
+`>``\ `{=latex}`x`\
+`5`\
+`>`
+
+`x` is an expression (a variable reference) that evaluates to the value
+`5` (a number).
+
+(In our arrow notation, we would write `x => 5`.)
+
+Let's define another variable, like we did above:
+
+`>``\ `{=latex}`(define``\ `{=latex}`cool-cat``\ `{=latex}`(quote``\ `{=latex}`Sugie))`\
+`>`
+
+`>``\ `{=latex}`cool-cat`\
+`Sugie`\
+`>`
+
+`cool-cat` is an expression (a variable reference) that evaluates to the
+value `Sugie` (a symbol).
+
+What happens if we refer to an *unbound variable*---that is, a variable
+that has not been defined?
+
+`>``\ `{=latex}`w`
+
+`Exception:``\ `{=latex}`variable``\ `{=latex}`w``\ `{=latex}`is``\ `{=latex}`not``\ `{=latex}`bound`\
+`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`\
+`>`
+
+Chez Scheme evaluates the expression `w`, which is a variable reference.
+Since `w` is an unbound variable, Chez is not able to determine the
+value bound to `w`. Instead, Chez Scheme *throws an exception* \[todo
+check terminology: throw exception?\] indicating that `w` is a variable
+that is not bound.
+
+Let's define `w` to have the same value as does the variable `x`:
+
+`>``\ `{=latex}`(define``\ `{=latex}`w``\ `{=latex}`x)`\
+`>``\ `{=latex}`w`\
+`5`\
+`>`
+
+Recall the syntax for uses of `define`:
+
+`(define <id> <expr>)`
+
+Also recall that `(define x 5)` is a statement rather than an
+expression. What happens if use a definition where an expression is
+required? Chez Scheme complains by throwing a different type of
+exception:
+
+`>``\ `{=latex}`(define``\ `{=latex}`z``\ `{=latex}`(define``\ `{=latex}`y``\ `{=latex}`6))`
+
+`Exception:``\ `{=latex}`invalid``\ `{=latex}`context``\ `{=latex}`for``\ `{=latex}`definition``\ `{=latex}`(define``\ `{=latex}`y``\ `{=latex}`6)`\
+`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`\
+`>`
+
+We have now encountered the crucial notions of Scheme expressions,
+values, and statements, which we will need in order to understand and
+write interpreters.[^7]
 
 ## Type predicates and procedure application
 
@@ -750,9 +816,9 @@ fast environment lookup for environments that are sufficiently ground
     example, `(set! x 6)`. We will avoid the use of `set!` for now,
     which means we pretend that `define` just gives a name to a value.
 
-[^6]: Actually, the variable `x` is bound to a location that contains
+[^6]: Actually, the variable `x` is bound to a *location* that contains
     the value `5`.
 
 [^7]: miniKanren also has the notions of expressions, values, and
-    statements, and introduces the new notion of *terms*, which
-    generalize the notion of values. \[todo add crossref\]
+    statements, and introduces the new notion of *terms*, a
+    generalization of the notion of values. \[todo add crossref\]
