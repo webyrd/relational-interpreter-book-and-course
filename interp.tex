@@ -363,7 +363,17 @@ A definition is neither an expression nor a value---it is a \emph{statement}.  W
 
 Once we have defined a variable (such as \verb|x|), we can \emph{reference} (or \emph{refer to}) that variable to get the value to which it is bound (such as the number 5, in the case of the variable \verb|x|).
 
-We can see the behavior of \verb|define| and variable reference at the Chez Scheme Read-Eval-Print Loop, or \emph{REPL}.  First we start Chez Scheme, and then define \verb|x| to be \verb|5|:
+We can see the behavior of \verb|define| and variable reference at the Chez Scheme Read-Eval-Print Loop, or \emph{REPL}.  First we start Chez Scheme: 
+
+\begin{alltt}
+Chez Scheme Version 10.1.0
+Copyright 1984-2024 Cisco Systems, Inc.
+
+> 
+\end{alltt}
+
+\noindent
+and then define \verb|x| to be \verb|5|:
 
 \begin{alltt}
 Chez Scheme Version 10.1.0
@@ -373,12 +383,13 @@ Copyright 1984-2024 Cisco Systems, Inc.
 > 
 \end{alltt}
 
+The \verb|> | prompt on the line following \verb|> (define x 5)| indicates that Chez has evaluated the statement \verb|(define x 5)| and is ready to evaluate the next expression or statement.  To save space, we'll not show the \verb|> | prompt whenever an expression evaluates to a value that is printed at the REPL.
+
 Now that we have defined the variable \verb|x|, we can refer to it:
 
 \begin{alltt}
 > x
 5
-> 
 \end{alltt}
 
 \noindent
@@ -396,7 +407,6 @@ Let's define another variable, like we did above:
 \begin{alltt}
 > cool-cat
 Sugie
-> 
 \end{alltt}
 
 \noindent
@@ -408,8 +418,7 @@ What happens if we refer to an \emph{unbound variable}---that is, a variable tha
 > w
 
 Exception: variable w is not bound
-Type (debug) to enter the debugger.
-> 
+Type (debug) to enter the debugger. 
 \end{alltt}
 
 \noindent
@@ -423,7 +432,6 @@ Let's define \verb|w| to have the same value as does the variable \verb|x|:
 > (define w x)
 > w
 5
->
 \end{alltt}
 
 %% The \emph{expression} \verb|x| (which is a variable reference) \emph{evaluates} to the \emph{value} \verb|5| (which is a number).  [todo this sentence has a lot going on] [todo is there a way to introduce a compound expression by this point, so we don't just have variable reference?]
@@ -443,12 +451,63 @@ What happens if use a definition where an expression is required?  Chez Scheme c
 
 Exception: invalid context for definition (define y 6)
 Type (debug) to enter the debugger.
-> 
 \end{alltt}
 
 We have now encountered the crucial notions of Scheme expressions, values, and statements, which we will need in order to understand and write interpreters.\footnote{miniKanren also has the notions of expressions, values, and statements, and introduces the new notion of \emph{terms}, a generalization of the notion of values. [todo add crossref]}
 
-\section{Type predicates and procedure application}
+\section{Procedures and procedure application}
+
+built-in procedures
+
+initial environment
+
+\verb|(add1 5) => 6|
+
+\begin{alltt}
+> (add1 5)
+6
+\end{alltt}
+  
+\begin{alltt}
+> add1
+#<procedure add1>
+\end{alltt}
+
+\begin{alltt}
+> (add1 (add1 5))
+7 
+\end{alltt}
+
+\begin{alltt}
+> (+ 3 4)
+7
+\end{alltt}
+
+\begin{alltt}
+> (+ (+ 3 4) (+ 5 6))
+18
+\end{alltt}
+
+\begin{alltt}
+> (+ 7835467856 98236472167)
+106071940023
+\end{alltt}
+
+\begin{alltt}
+> +
+#<procedure +>
+\end{alltt}
+
+\verb|+| is variadic
+
+\begin{alltt}
+> (+ 5)
+5
+> (+)
+0
+\end{alltt}
+
+\section{Predicates, including type predicates}
 
 In Scheme, a \emph{predicate} is a procedure that, when called, always terminates (without signalling an error), and that always returns one of the two Boolean literals: \verb|#f| or \verb|#t|.
 
@@ -467,11 +526,27 @@ Also by convention, many people ``huh?''
 
 \verb|symbol?|
 
-\section{\texttt{if}}
+\section{\texttt{if}, test expressions, and truthiness}
+
+\verb|(if #t (+ 3 4) (+ 5 6)) => 7|
+
+\verb|(if #f (+ 3 4) (+ 5 6)) => 11|
+
+\verb|(if (number? 72634786) (+ 3 4) (+ 5 6)) => 7|
+
+\verb|(if (symbol? 72634786) (+ 3 4) (+ 5 6)) => 11|
+
+\verb|(if <expr> <expr> <expr>)|
+
+one-armed vs. two-armed \verb|if|
 
 \verb|#t| is not the only true value in Scheme.
 In fact, \emph{any} value in Scheme other than \verb|#f| is considered true.
 For example, both \verb|5| and \verb|0| are considered true values in Scheme.
+
+\verb|(if 42 (+ 3 4) (+ 5 6)) => 7|
+
+\verb|(if 'cat (+ 3 4) (+ 5 6)) => 7|
 
 \section{Evaluation order and special forms}
 
@@ -479,7 +554,7 @@ special forms vs. application
 
 keywords
 
-quote and define are keywords; \verb|(quote <datum>)| and \verb|(define <id> <expr>)| are special forms.
+\verb|quote|, \verb|define|, and \verb|if| are keywords; \verb|(quote <datum>)|, \verb|(define <id> <expr>)|, and \verb|(if <expr> <expr> <expr>)| are special forms.
 
 \section{Comments}
 
@@ -774,6 +849,20 @@ absento trick to generate more interesting Twines and Thrines
 
 
 \chapter{Adding explicit errors}% explicit errors
+
+
+\chapter{Adding delimited control operators}%
+
+delimited continuations and/or effect handlers---can we do so in such a way that avoids ``breaking the wires''?
+
+talk about the problem with \verb|call/cc| and breaking the wires
+
+
+\chapter{Adding mutation}% mutation
+
+support \verb|set!| (can we get away with supporting \verb|set!| without adding a store?)
+
+support mutiple pairs and have an explicit store
 
 
 \chapter{Writing a parser as a relation}% relational parser

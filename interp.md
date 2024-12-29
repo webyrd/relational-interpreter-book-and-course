@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-28
+date: 2024-12-29
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -391,8 +391,14 @@ Once we have defined a variable (such as `x`), we can *reference* (or
 the number 5, in the case of the variable `x`).
 
 We can see the behavior of `define` and variable reference at the Chez
-Scheme Read-Eval-Print Loop, or *REPL*. First we start Chez Scheme, and
-then define `x` to be `5`:
+Scheme Read-Eval-Print Loop, or *REPL*. First we start Chez Scheme:
+
+`Chez``\ `{=latex}`Scheme``\ `{=latex}`Version``\ `{=latex}`10.1.0`\
+`Copyright``\ `{=latex}`1984-2024``\ `{=latex}`Cisco``\ `{=latex}`Systems,``\ `{=latex}`Inc.`
+
+`>`
+
+and then define `x` to be `5`:
 
 `Chez``\ `{=latex}`Scheme``\ `{=latex}`Version``\ `{=latex}`10.1.0`\
 `Copyright``\ `{=latex}`1984-2024``\ `{=latex}`Cisco``\ `{=latex}`Systems,``\ `{=latex}`Inc.`
@@ -400,11 +406,16 @@ then define `x` to be `5`:
 `>``\ `{=latex}`(define``\ `{=latex}`x``\ `{=latex}`5)`\
 `>`
 
+The `> ` prompt on the line following `> (define x 5)` indicates that
+Chez has evaluated the statement `(define x 5)` and is ready to evaluate
+the next expression or statement. To save space, we'll not show the `> `
+prompt whenever an expression evaluates to a value that is printed at
+the REPL.
+
 Now that we have defined the variable `x`, we can refer to it:
 
 `>``\ `{=latex}`x`\
-`5`\
-`>`
+`5`
 
 `x` is an expression (a variable reference) that evaluates to the value
 `5` (a number).
@@ -417,8 +428,7 @@ Let's define another variable, like we did above:
 `>`
 
 `>``\ `{=latex}`cool-cat`\
-`Sugie`\
-`>`
+`Sugie`
 
 `cool-cat` is an expression (a variable reference) that evaluates to the
 value `Sugie` (a symbol).
@@ -429,8 +439,7 @@ that has not been defined?
 `>``\ `{=latex}`w`
 
 `Exception:``\ `{=latex}`variable``\ `{=latex}`w``\ `{=latex}`is``\ `{=latex}`not``\ `{=latex}`bound`\
-`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`\
-`>`
+`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`
 
 Chez Scheme evaluates the expression `w`, which is a variable reference.
 Since `w` is an unbound variable, Chez is not able to determine the
@@ -442,8 +451,7 @@ Let's define `w` to have the same value as does the variable `x`:
 
 `>``\ `{=latex}`(define``\ `{=latex}`w``\ `{=latex}`x)`\
 `>``\ `{=latex}`w`\
-`5`\
-`>`
+`5`
 
 Recall the syntax for uses of `define`:
 
@@ -457,14 +465,49 @@ exception:
 `>``\ `{=latex}`(define``\ `{=latex}`z``\ `{=latex}`(define``\ `{=latex}`y``\ `{=latex}`6))`
 
 `Exception:``\ `{=latex}`invalid``\ `{=latex}`context``\ `{=latex}`for``\ `{=latex}`definition``\ `{=latex}`(define``\ `{=latex}`y``\ `{=latex}`6)`\
-`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`\
-`>`
+`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`
 
 We have now encountered the crucial notions of Scheme expressions,
 values, and statements, which we will need in order to understand and
 write interpreters.[^7]
 
-## Type predicates and procedure application
+## Procedures and procedure application
+
+built-in procedures
+
+initial environment
+
+`(add1 5) => 6`
+
+`>``\ `{=latex}`(add1``\ `{=latex}`5)`\
+`6`
+
+`>``\ `{=latex}`add1`\
+`#<procedure``\ `{=latex}`add1>`
+
+`>``\ `{=latex}`(add1``\ `{=latex}`(add1``\ `{=latex}`5))`\
+`7`
+
+`>``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)`\
+`7`
+
+`>``\ `{=latex}`(+``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`18`
+
+`>``\ `{=latex}`(+``\ `{=latex}`7835467856``\ `{=latex}`98236472167)`\
+`106071940023`
+
+`>``\ `{=latex}`+`\
+`#<procedure``\ `{=latex}`+>`
+
+`+` is variadic
+
+`>``\ `{=latex}`(+``\ `{=latex}`5)`\
+`5`\
+`>``\ `{=latex}`(+)`\
+`0`
+
+## Predicates, including type predicates
 
 In Scheme, a *predicate* is a procedure that, when called, always
 terminates (without signalling an error), and that always returns one of
@@ -486,11 +529,27 @@ mark. Also by convention, many people "huh?"
 
 `symbol?`
 
-## `if`
+## `if`, test expressions, and truthiness
+
+`(if #t (+ 3 4) (+ 5 6)) => 7`
+
+`(if #f (+ 3 4) (+ 5 6)) => 11`
+
+`(if (number? 72634786) (+ 3 4) (+ 5 6)) => 7`
+
+`(if (symbol? 72634786) (+ 3 4) (+ 5 6)) => 11`
+
+`(if <expr> <expr> <expr>)`
+
+one-armed vs. two-armed `if`
 
 `#t` is not the only true value in Scheme. In fact, *any* value in
 Scheme other than `#f` is considered true. For example, both `5` and `0`
 are considered true values in Scheme.
+
+`(if 42 (+ 3 4) (+ 5 6)) => 7`
+
+`(if 'cat (+ 3 4) (+ 5 6)) => 7`
 
 ## Evaluation order and special forms
 
@@ -498,8 +557,9 @@ special forms vs. application
 
 keywords
 
-quote and define are keywords; `(quote <datum>)` and
-`(define <id> <expr>)` are special forms.
+`quote`, `define`, and `if` are keywords; `(quote <datum>)`,
+`(define <id> <expr>)`, and `(if <expr> <expr> <expr>)` are special
+forms.
 
 ## Comments
 
@@ -780,6 +840,20 @@ absento trick to generate more interesting Twines and Thrines
 # Extending the interpreter to handle `append`
 
 # Adding explicit errors
+
+# Adding delimited control operators
+
+delimited continuations and/or effect handlers---can we do so in such a
+way that avoids "breaking the wires"?
+
+talk about the problem with `call/cc` and breaking the wires
+
+# Adding mutation
+
+support `set!` (can we get away with supporting `set!` without adding a
+store?)
+
+support mutiple pairs and have an explicit store
 
 # Writing a parser as a relation
 
