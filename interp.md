@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-29
+date: 2024-12-31
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -501,6 +501,9 @@ initial environment
 `#<procedure``\ `{=latex}`+>`
 
 `+` is variadic
+
+`>``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6``\ `{=latex}`7)`\
+`18`
 
 `>``\ `{=latex}`(+``\ `{=latex}`5)`\
 `5`\
