@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2024-12-31
+date: 2025-01-01
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -566,7 +566,12 @@ forms.
 
 ## Comments
 
-`;`
+Any characters on a line following the `;` character will be ignored.
+For example,
+
+`(* 3 4) ; (/ 5 0)`
+
+evaluates to `12`.
 
 `#;`
 

@@ -564,7 +564,12 @@ keywords
 
 \section{Comments}
 
-\verb|;|
+Any characters on a line following the \verb|;| character will be ignored.  For example,
+
+\verb|(* 3 4) ; (/ 5 0)|
+
+\noindent
+evaluates to \verb|12|.
 
 \verb|#;|
 
