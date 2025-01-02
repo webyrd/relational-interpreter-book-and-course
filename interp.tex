@@ -562,6 +562,23 @@ keywords
 
 \verb|quote|, \verb|define|, and \verb|if| are keywords; \verb|(quote <datum>)|, \verb|(define <id> <expr>)|, and \verb|(if <expr> <expr> <expr>)| are special forms.
 
+Recall that in the initial Scheme environment \verb|+| is a variable bound to a procedure that adds zero or more numbers:
+
+\begin{alltt}
+> +
+#<procedure +>
+\end{alltt}
+
+In contrast, in the initial Scheme environment \verb|quote| is the \emph{keyword} of a special form.  Recall that \verb|(quote <datum>)| is the general syntax for a \verb|quote| expression.  The expression \verb|(quote cat)| evaluates to the symbol \verb|cat|.  However, evaluating the keyword \verb|quote| by itself leads to a \emph{syntax error}:
+
+\begin{alltt}
+> quote
+
+Exception: invalid syntax quote
+Type (debug) to enter the debugger.
+\end{alltt}
+
+
 \section{Comments}
 
 Any characters on a line following the \verb|;| character will be ignored.  For example,

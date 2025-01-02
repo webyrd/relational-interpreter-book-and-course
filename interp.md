@@ -564,6 +564,23 @@ keywords
 `(define <id> <expr>)`, and `(if <expr> <expr> <expr>)` are special
 forms.
 
+Recall that in the initial Scheme environment `+` is a variable bound to
+a procedure that adds zero or more numbers:
+
+`>``\ `{=latex}`+`\
+`#<procedure``\ `{=latex}`+>`
+
+In contrast, in the initial Scheme environment `quote` is the *keyword*
+of a special form. Recall that `(quote <datum>)` is the general syntax
+for a `quote` expression. The expression `(quote cat)` evaluates to the
+symbol `cat`. However, evaluating the keyword `quote` by itself leads to
+a *syntax error*:
+
+`>``\ `{=latex}`quote`
+
+`Exception:``\ `{=latex}`invalid``\ `{=latex}`syntax``\ `{=latex}`quote`\
+`Type``\ `{=latex}`(debug)``\ `{=latex}`to``\ `{=latex}`enter``\ `{=latex}`the``\ `{=latex}`debugger.`
+
 ## Comments
 
 Any characters on a line following the `;` character will be ignored.
