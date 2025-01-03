@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-01
+date: 2025-01-03
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -623,6 +623,11 @@ nested lists
 `cons`
 
 `pair?`
+
+## S-expressions
+
+\[todo need to introduce the concept of the s-expression. Now might be a
+good time, since we have symbols, numbers, booleans, pairs\]
 
 ## `lambda`
 
