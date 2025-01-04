@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-03
+date: 2025-01-04
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -590,7 +590,10 @@ For example,
 
 evaluates to `12`.
 
-`#;`
+The entire S-expression following `#;` will be ignored. For example,
+
+`(+``\ `{=latex}`4``\ `{=latex}`5)``\ `{=latex}`#;(*``\ `{=latex}`6`\
+`7)`
 
 `#|` and `|#`
 

@@ -588,8 +588,13 @@ Any characters on a line following the \verb|;| character will be ignored.  For 
 \noindent
 evaluates to \verb|12|.
 
-\verb|#;|
+The entire S-expression following \verb|#;| will be ignored.  For example,
 
+\begin{alltt}
+(+ 4 5) #;(* 6
+             7)
+\end{alltt}
+  
 \texttt{\#|} and
 \texttt{|\#}
 
