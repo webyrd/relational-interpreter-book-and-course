@@ -457,61 +457,90 @@ We have now encountered the crucial notions of Scheme expressions, values, and s
 
 \section{Procedures and procedure application}
 
-built-in procedures
-
-initial environment
-
-\verb|(add1 5) => 6|
+What if we would like to add one to the number five?  One way to do this in Scheme is to write the expression \verb|(add1 5)|:
 
 \begin{alltt}
 > (add1 5)
 6
 \end{alltt}
-  
+
+%\verb|(add1 5) => 6|
+
+The expression \verb|(add1 5)| is an example of a \emph{procedure application}, or just \emph{application} (sometimes called a \emph{procedure call}, or just \emph{call}).
+
+If the expression \verb|(add1 5)| is a procedure application, then what is \verb|add1|?  Let's find out at the REPL:
+
 \begin{alltt}
 > add1
 #<procedure add1>
 \end{alltt}
+
+Aha! 
+\verb|add1| is a variable that is bound to a \emph{procedure}.
+In Scheme procedures are values, just like numbers, Booleans, and symbols.
+\verb|add1| is a \emph{built-in} procedure that is bound in Chez Scheme's \emph{initial environment}, which is the default set of variable bindings that exist when Chez is started.  We can extend or modify the initial environment, as we did before using \verb|define|.
+
+We can nest procedure applications in Scheme:
 
 \begin{alltt}
 > (add1 (add1 5))
 7 
 \end{alltt}
 
+There are many built-in procedures in the initial Scheme environment, and even more in the initial Chez Scheme environment, since Chez extends Scheme with many additional procedures.  If we want to add two numbers, we can use the built-in Scheme procedure \verb|+|:
+
 \begin{alltt}
 > (+ 3 4)
 7
 \end{alltt}
 
-\begin{alltt}
-> (+ (+ 3 4) (+ 5 6))
-18
-\end{alltt}
+\noindent
+and:
 
 \begin{alltt}
 > (+ 7835467856 98236472167)
 106071940023
 \end{alltt}
 
+Of course, we can nest procedure applications:
+
+\begin{alltt}
+> (+ (add1 (+ 3 (add1 7) (+ 5 6))))
+23
+\end{alltt}
+
+As is the case with \verb|add1|, \verb|+| is a variable that is bound to a procedure in Chez Scheme's initial environment:
+
 \begin{alltt}
 > +
 #<procedure +>
 \end{alltt}
 
-\verb|+| is variadic
-
+The procedure bound to \verb|add1| takes exactly one argument.
+In contrast, the procedure bound to \verb|+| is \emph{variadic}, meaning that it can take any number of arguments.  For example, the procedure bound to \verb|+| can take three arguments:
 
 \begin{alltt}
 > (+ 5 6 7)
 18
 \end{alltt}
 
+\noindent
+one argument:
+
 \begin{alltt}
 > (+ 5)
 5
+\end{alltt}
+
+\noindent
+or even zero arguments:
+
+\begin{alltt}
 > (+)
 0
 \end{alltt}
+
+The expression \verb|(+)| evaluates to \verb|0| because zero is the additive identity (the number that when added to another number preserves the value of that second number).
 
 \section{Predicates, including type predicates}
 

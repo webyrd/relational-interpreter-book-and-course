@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-04
+date: 2025-01-05
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -473,42 +473,79 @@ write interpreters.[^7]
 
 ## Procedures and procedure application
 
-built-in procedures
-
-initial environment
-
-`(add1 5) => 6`
+What if we would like to add one to the number five? One way to do this
+in Scheme is to write the expression `(add1 5)`:
 
 `>``\ `{=latex}`(add1``\ `{=latex}`5)`\
 `6`
 
+The expression `(add1 5)` is an example of a *procedure application*, or
+just *application* (sometimes called a *procedure call*, or just
+*call*).
+
+If the expression `(add1 5)` is a procedure application, then what is
+`add1`? Let's find out at the REPL:
+
 `>``\ `{=latex}`add1`\
 `#<procedure``\ `{=latex}`add1>`
+
+Aha! `add1` is a variable that is bound to a *procedure*. In Scheme
+procedures are values, just like numbers, Booleans, and symbols. `add1`
+is a *built-in* procedure that is bound in Chez Scheme's *initial
+environment*, which is the default set of variable bindings that exist
+when Chez is started. We can extend or modify the initial environment,
+as we did before using `define`.
+
+We can nest procedure applications in Scheme:
 
 `>``\ `{=latex}`(add1``\ `{=latex}`(add1``\ `{=latex}`5))`\
 `7`
 
+There are many built-in procedures in the initial Scheme environment,
+and even more in the initial Chez Scheme environment, since Chez extends
+Scheme with many additional procedures. If we want to add two numbers,
+we can use the built-in Scheme procedure `+`:
+
 `>``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)`\
 `7`
 
-`>``\ `{=latex}`(+``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
-`18`
+and:
 
 `>``\ `{=latex}`(+``\ `{=latex}`7835467856``\ `{=latex}`98236472167)`\
 `106071940023`
 
+Of course, we can nest procedure applications:
+
+`>``\ `{=latex}`(+``\ `{=latex}`(add1``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`(add1``\ `{=latex}`7)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))))`\
+`23`
+
+As is the case with `add1`, `+` is a variable that is bound to a
+procedure in Chez Scheme's initial environment:
+
 `>``\ `{=latex}`+`\
 `#<procedure``\ `{=latex}`+>`
 
-`+` is variadic
+The procedure bound to `add1` takes exactly one argument. In contrast,
+the procedure bound to `+` is *variadic*, meaning that it can take any
+number of arguments. For example, the procedure bound to `+` can take
+three arguments:
 
 `>``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6``\ `{=latex}`7)`\
 `18`
 
+one argument:
+
 `>``\ `{=latex}`(+``\ `{=latex}`5)`\
-`5`\
+`5`
+
+or even zero arguments:
+
 `>``\ `{=latex}`(+)`\
 `0`
+
+The expression `(+)` evaluates to `0` because zero is the additive
+identity (the number that when added to another number preserves the
+value of that second number).
 
 ## Predicates, including type predicates
 
