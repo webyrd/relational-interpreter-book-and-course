@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-05
+date: 2025-01-06
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -554,20 +554,82 @@ terminates (without signalling an error), and that always returns one of
 the two Boolean literals: `#f` or `#t`.
 
 A *type predicate* is a predicate that can be used to determine the type
-of a value.
+of a value. For example, the predicate
 
 `number?`
 
+is a built-in procedure that determines whether its argument is a
+number:
+
+`>``\ `{=latex}`number?`\
+`#<procedure``\ `{=latex}`number?>`\
+`>``\ `{=latex}`(number?``\ `{=latex}`5)`\
+`#t`\
+`>``\ `{=latex}`(number?``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4))`\
+`#t`\
+`>``\ `{=latex}`(number?``\ `{=latex}`(quote``\ `{=latex}`cat))`\
+`#f`\
+`>``\ `{=latex}`(number?``\ `{=latex}`#t)`\
+`#f`\
+`>``\ `{=latex}`(number?``\ `{=latex}`number?)`\
+`#f`
+
 It is a Scheme convention to end the names of predicates with a question
-mark. Also by convention, many people "huh?"
+mark. Also by convention, many people pronounce the `?` at the end of
+the predicate's name as "huh"; for example, `number?` is pronounced
+"number-huh".
 
-`(number? 5) => #t`
+Scheme's built-in type predicates also include `boolean?`, `symbol?`,
+and `procedure?`:
 
-`(number? #t) => #f`
+`>``\ `{=latex}`(boolean?``\ `{=latex}`#t)`\
+`#t`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`#f)`\
+`#t`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`5)`\
+`#f`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4))`\
+`#f`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`(quote``\ `{=latex}`cat))`\
+`#f`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`boolean?)`\
+`#f`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`(number?``\ `{=latex}`5))`\
+`#t`\
+`>``\ `{=latex}`(boolean?``\ `{=latex}`(number?``\ `{=latex}`#f))`\
+`#t`
 
-`boolean?`
+`>``\ `{=latex}`(symbol?``\ `{=latex}`(quote``\ `{=latex}`cat))`\
+`#t`\
+`>``\ `{=latex}`(symbol?``\ `{=latex}`5)`\
+`#f`\
+`>``\ `{=latex}`(symbol?``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4))`\
+`#f`\
+`>``\ `{=latex}`(symbol?``\ `{=latex}`#f)`\
+`#f`\
+`>``\ `{=latex}`(symbol?``\ `{=latex}`symbol?)`\
+`#f`\
+`>``\ `{=latex}`(symbol?``\ `{=latex}`(symbol?``\ `{=latex}`5))`\
+`#f`
 
-`symbol?`
+`>``\ `{=latex}`(procedure?``\ `{=latex}`procedure?)`\
+`#t`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`+)`\
+`#t`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`add1)`\
+`#t`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`5)`\
+`#f`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4))`\
+`#f`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`(quote``\ `{=latex}`cat))`\
+`#f`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`(quote``\ `{=latex}`+))`\
+`#f`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`#t)`\
+`#f`\
+`>``\ `{=latex}`(procedure?``\ `{=latex}`(symbol?``\ `{=latex}`(quote``\ `{=latex}`cat)))`\
+`#f`
 
 ## `if`, test expressions, and truthiness
 
@@ -670,12 +732,6 @@ nested lists
 good time, since we have symbols, numbers, booleans, pairs\]
 
 ## `lambda`
-
-## Procedures
-
-`procedure?`
-
-variable ref to procs
 
 ## Equality predicates
 

@@ -546,20 +546,87 @@ The expression \verb|(+)| evaluates to \verb|0| because zero is the additive ide
 
 In Scheme, a \emph{predicate} is a procedure that, when called, always terminates (without signalling an error), and that always returns one of the two Boolean literals: \verb|#f| or \verb|#t|.
 
-A \emph{type predicate} is a predicate that can be used to determine the type of a value.
+A \emph{type predicate} is a predicate that can be used to determine the type of a value.  For example, the predicate
 
 \verb|number?|
 
+\noindent
+is a built-in procedure that determines whether its argument is a number:
+
+\begin{alltt}
+> number?
+#<procedure number?>
+> (number? 5)
+#t
+> (number? (+ 3 4))
+#t
+> (number? (quote cat))
+#f
+> (number? #t)
+#f
+> (number? number?)
+#f
+\end{alltt}
+
 It is a Scheme convention to end the names of predicates with a question mark.
-Also by convention, many people ``huh?'' 
+Also by convention, many people pronounce the \verb|?| at the end of the predicate's name as ``huh''; for example, \verb|number?| is pronounced ``number-huh''.
 
-\verb|(number? 5) => #t|
+Scheme's built-in type predicates also include \verb|boolean?|, \verb|symbol?|, and \verb|procedure?|:
 
-\verb|(number? #t) => #f|
+\begin{alltt}
+> (boolean? #t)
+#t
+> (boolean? #f)
+#t
+> (boolean? 5)
+#f
+> (boolean? (+ 3 4))
+#f
+> (boolean? (quote cat))
+#f
+> (boolean? boolean?)
+#f
+> (boolean? (number? 5))
+#t
+> (boolean? (number? #f))
+#t
+\end{alltt}
 
-\verb|boolean?|
+\begin{alltt}
+> (symbol? (quote cat))
+#t
+> (symbol? 5)
+#f
+> (symbol? (+ 3 4))
+#f
+> (symbol? #f)
+#f
+> (symbol? symbol?)
+#f
+> (symbol? (symbol? 5))
+#f
+\end{alltt}
 
-\verb|symbol?|
+\begin{alltt}
+> (procedure? procedure?)
+#t
+> (procedure? +)
+#t
+> (procedure? add1)
+#t
+> (procedure? 5)
+#f
+> (procedure? (+ 3 4))
+#f
+> (procedure? (quote cat))
+#f
+> (procedure? (quote +))
+#f
+> (procedure? #t)
+#f
+> (procedure? (symbol? (quote cat)))
+#f
+\end{alltt}  
 
 \section{\texttt{if}, test expressions, and truthiness}
 
@@ -671,11 +738,6 @@ nested lists
 
 \section{\texttt{lambda}}
 
-\section{Procedures}
-
-\verb|procedure?|
-
-variable ref to procs
 
 \section{Equality predicates}
 
