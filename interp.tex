@@ -628,27 +628,63 @@ Scheme's built-in type predicates also include \verb|boolean?|, \verb|symbol?|, 
 #f
 \end{alltt}  
 
+
 \section{\texttt{if}, test expressions, and truthiness}
 
-\verb|(if #t (+ 3 4) (+ 5 6)) => 7|
+We can make choices in Scheme using an \verb|if| expression, which is of the form
 
-\verb|(if #f (+ 3 4) (+ 5 6)) => 11|
+\verb|(if <test> <consequent> <alternative>)|
 
-\verb|(if (number? 72634786) (+ 3 4) (+ 5 6)) => 7|
+\noindent
+where \verb|<test>|, \verb|<consequent>|, and \verb|<alternative>| are all expressions.
 
-\verb|(if (symbol? 72634786) (+ 3 4) (+ 5 6)) => 11|
+\begin{alltt}
+> (if #t (+ 3 4) (+ 5 6))
+7
+> (if #f (+ 3 4) (+ 5 6))
+11
+> (if (number? 72634786) (+ 3 4) (+ 5 6))
+7
+> (if (symbol? 72634786) (+ 3 4) (+ 5 6))
+11
+\end{alltt}
 
-\verb|(if <expr> <expr> <expr>)|
+%% \verb|(if #t (+ 3 4) (+ 5 6)) => 7|
 
-one-armed vs. two-armed \verb|if|
+%% \verb|(if #f (+ 3 4) (+ 5 6)) => 11|
+
+%% \verb|(if (number? 72634786) (+ 3 4) (+ 5 6)) => 7|
+
+%% \verb|(if (symbol? 72634786) (+ 3 4) (+ 5 6)) => 11|
+
+%\verb|(if <expr> <expr> <expr>)|
+
+%\verb|(if <e1> <e2> <e3>)|
+
+
+%\verb|(if <test> <conseq> <alt>)|
+
+%\verb|(if <te> <ce> <ae>)|
+
+%\verb|(if <t> <c> <a>)|
+
+% one-armed vs. two-armed \verb|if|
 
 \verb|#t| is not the only true value in Scheme.
 In fact, \emph{any} value in Scheme other than \verb|#f| is considered true.
 For example, both \verb|5| and \verb|0| are considered true values in Scheme.
 
-\verb|(if 42 (+ 3 4) (+ 5 6)) => 7|
+\begin{alltt}
+> (if 42 (+ 3 4) (+ 5 6))
+7
+> (if 'cat (+ 3 4) (+ 5 6))
+7
+\end{alltt}
 
-\verb|(if 'cat (+ 3 4) (+ 5 6)) => 7|
+%% \verb|(if 42 (+ 3 4) (+ 5 6)) => 7|
+
+%% \verb|(if 'cat (+ 3 4) (+ 5 6)) => 7|
+
 
 \section{Evaluation order and special forms}
 

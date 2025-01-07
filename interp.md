@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-06
+date: 2025-01-07
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -633,25 +633,30 @@ and `procedure?`:
 
 ## `if`, test expressions, and truthiness
 
-`(if #t (+ 3 4) (+ 5 6)) => 7`
+We can make choices in Scheme using an `if` expression, which is of the
+form
 
-`(if #f (+ 3 4) (+ 5 6)) => 11`
+`(if <test> <consequent> <alternative>)`
 
-`(if (number? 72634786) (+ 3 4) (+ 5 6)) => 7`
+where `<test>`, `<consequent>`, and `<alternative>` are all expressions.
 
-`(if (symbol? 72634786) (+ 3 4) (+ 5 6)) => 11`
-
-`(if <expr> <expr> <expr>)`
-
-one-armed vs. two-armed `if`
+`>``\ `{=latex}`(if``\ `{=latex}`#t``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`7`\
+`>``\ `{=latex}`(if``\ `{=latex}`#f``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`11`\
+`>``\ `{=latex}`(if``\ `{=latex}`(number?``\ `{=latex}`72634786)``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`7`\
+`>``\ `{=latex}`(if``\ `{=latex}`(symbol?``\ `{=latex}`72634786)``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`11`
 
 `#t` is not the only true value in Scheme. In fact, *any* value in
 Scheme other than `#f` is considered true. For example, both `5` and `0`
 are considered true values in Scheme.
 
-`(if 42 (+ 3 4) (+ 5 6)) => 7`
-
-`(if 'cat (+ 3 4) (+ 5 6)) => 7`
+`>``\ `{=latex}`(if``\ `{=latex}`42``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`7`\
+`>``\ `{=latex}`(if``\ `{=latex}`’cat``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`7`
 
 ## Evaluation order and special forms
 
