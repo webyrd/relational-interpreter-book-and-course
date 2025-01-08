@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-07
+date: 2025-01-08
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -639,11 +639,36 @@ form
 `(if <test> <consequent> <alternative>)`
 
 where `<test>`, `<consequent>`, and `<alternative>` are all expressions.
+For example, in the expression `(if #t 3 4)`, the *subexpression* `#t`
+is in the *test position*, the subexpression `3` is in the *consequent
+position*, and the subexpression `4` is in the *alternative position*.
+
+The rule for evaluation of an `if` expression is that first the test
+subexpression is evaluated. If the test subexpression evaluates to a
+true value, then the consequent subexpression is evaluated, and the
+resulting value is the value of the entire `if` expression. If the test
+subexpression evaluates to a false value, then the alternative
+subexpression is evaluated, and the resulting value is the value of the
+entire `if` expression.
+
+For example:
+
+`>``\ `{=latex}`(if``\ `{=latex}`#t``\ `{=latex}`3``\ `{=latex}`4)`\
+`3`
+
+`>``\ `{=latex}`(if``\ `{=latex}`#f``\ `{=latex}`3``\ `{=latex}`4)`\
+`4`
+
+Of course we can use more complex expressions for the consequent and
+alternative subexpressions:
 
 `>``\ `{=latex}`(if``\ `{=latex}`#t``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
 `7`\
 `>``\ `{=latex}`(if``\ `{=latex}`#f``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
-`11`\
+`11`
+
+And we can use more complex expressions for the test subexpression:
+
 `>``\ `{=latex}`(if``\ `{=latex}`(number?``\ `{=latex}`72634786)``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
 `7`\
 `>``\ `{=latex}`(if``\ `{=latex}`(symbol?``\ `{=latex}`72634786)``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
@@ -654,6 +679,8 @@ Scheme other than `#f` is considered true. For example, both `5` and `0`
 are considered true values in Scheme.
 
 `>``\ `{=latex}`(if``\ `{=latex}`42``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
+`7`\
+`>``\ `{=latex}`(if``\ `{=latex}`(*``\ `{=latex}`6``\ `{=latex}`7)``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
 `7`\
 `>``\ `{=latex}`(if``\ `{=latex}`’cat``\ `{=latex}`(+``\ `{=latex}`3``\ `{=latex}`4)``\ `{=latex}`(+``\ `{=latex}`5``\ `{=latex}`6))`\
 `7`

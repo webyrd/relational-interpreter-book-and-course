@@ -637,12 +637,36 @@ We can make choices in Scheme using an \verb|if| expression, which is of the for
 
 \noindent
 where \verb|<test>|, \verb|<consequent>|, and \verb|<alternative>| are all expressions.
+%
+For example, in the expression \verb|(if #t 3 4)|, the \emph{subexpression} \verb|#t| is in the \emph{test position}, the subexpression \verb|3| is in the \emph{consequent position}, and the subexpression \verb|4| is in the \emph{alternative position}.
+
+The rule for evaluation of an \verb|if| expression is that first the test subexpression is evaluated.  If the test subexpression evaluates to a true value, then the consequent subexpression is evaluated, and the resulting value is the value of the entire \verb|if| expression.  If the test subexpression evaluates to a false value, then the alternative subexpression is evaluated, and the resulting value is the value of the entire \verb|if| expression.
+
+For example:
+
+\begin{alltt}
+> (if #t 3 4)
+3
+\end{alltt}
+  
+\begin{alltt}
+> (if #f 3 4)
+4
+\end{alltt}
+
+Of course we can use more complex expressions for the consequent and alternative subexpressions:
 
 \begin{alltt}
 > (if #t (+ 3 4) (+ 5 6))
 7
 > (if #f (+ 3 4) (+ 5 6))
 11
+\end{alltt}
+
+\noindent
+And we can use more complex expressions for the test subexpression:
+
+\begin{alltt}
 > (if (number? 72634786) (+ 3 4) (+ 5 6))
 7
 > (if (symbol? 72634786) (+ 3 4) (+ 5 6))
@@ -676,6 +700,8 @@ For example, both \verb|5| and \verb|0| are considered true values in Scheme.
 
 \begin{alltt}
 > (if 42 (+ 3 4) (+ 5 6))
+7
+> (if (* 6 7) (+ 3 4) (+ 5 6))
 7
 > (if 'cat (+ 3 4) (+ 5 6))
 7
