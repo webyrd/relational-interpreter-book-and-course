@@ -739,6 +739,11 @@ Type (debug) to enter the debugger.
 
 \section{Comments}
 
+% TODO These examples are a bit funny, since I'm only commenting out
+% code, not text comments or whatever.  Maybe should change that up,
+% or at least add extra examples.  And can include non-Latin Unicode,
+% such as kanji for Kanren, in the comments.
+
 Any characters on a line following the \verb|;| character will be ignored.  For example,
 
 \verb|(* 3 4) ; (/ 5 0)|
@@ -753,8 +758,42 @@ The entire S-expression following \verb|#;| will be ignored.  For example,
              7)
 \end{alltt}
   
-\texttt{\#|} and
-\texttt{|\#}
+Any characters between matching \texttt{\#|} and \texttt{|\#} will be igored.  For example:
+
+% TODO nicer, more natural example
+\begin{alltt}
+(list
+  (+ 3 4)
+  #|
+  erfjkhrj hfjk
+  kjrhjkrheg rjghjer gj
+  rghrejhj rjegh jrehk
+  
+  jehjkf klh fe
+  |#
+  (* 5 6)
+  )
+\end{alltt}
+
+\noindent
+is equivalent to
+
+\begin{alltt}
+(list
+  (+ 3 4)
+  (* 5 6)
+  )
+\end{alltt}
+
+\noindent
+which is equivalent to \verb|(list (+ 3 4) (* 5 6))|.
+
+% TODO Explain that extra whitespace is ignored in Scheme (where to put this?)
+
+% TODO Explain that, unlike in math notation and in many programming languages, in Scheme parens always ``mean something''---you can't add or remove them without changing the meaning of the program (as opposed to parens in math notation to just make implicit ordering of operations explicit, for example)
+
+% TODO Should I mention Chez Scheme's non-standard #!eof  ?
+
 
 \section{\texttt{cond}}
 

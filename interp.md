@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-08
+date: 2025-01-09
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -726,7 +726,29 @@ The entire S-expression following `#;` will be ignored. For example,
 `(+``\ `{=latex}`4``\ `{=latex}`5)``\ `{=latex}`#;(*``\ `{=latex}`6`\
 `7)`
 
-`#|` and `|#`
+Any characters between matching `#|` and `|#` will be igored. For
+example:
+
+`(list`\
+`(+``\ `{=latex}`3``\ `{=latex}`4)`\
+`#|`\
+`erfjkhrj``\ `{=latex}`hfjk`\
+`kjrhjkrheg``\ `{=latex}`rjghjer``\ `{=latex}`gj`\
+`rghrejhj``\ `{=latex}`rjegh``\ `{=latex}`jrehk`
+
+`jehjkf``\ `{=latex}`klh``\ `{=latex}`fe`\
+`|#`\
+`(*``\ `{=latex}`5``\ `{=latex}`6)`\
+`)`
+
+is equivalent to
+
+`(list`\
+`(+``\ `{=latex}`3``\ `{=latex}`4)`\
+`(*``\ `{=latex}`5``\ `{=latex}`6)`\
+`)`
+
+which is equivalent to `(list (+ 3 4) (* 5 6))`.
 
 ## `cond`
 
