@@ -760,6 +760,8 @@ The entire S-expression following \verb|#;| will be ignored.  For example,
   
 Any characters between matching \texttt{\#|} and \texttt{|\#} will be igored.  For example:
 
+% |#  ; <- added this so that Emacs doesn't think everything is commented!
+                                        
 % TODO nicer, more natural example
 \begin{alltt}
 (list
@@ -1066,9 +1068,100 @@ grammar for the language we are interpreting
 
 McCarthy challenge given in `A Micromanual for LISP'
 
-Quines, Twines, Thrines
+\begin{alltt}
+(run 1 (e) (evalo e e))
+\end{alltt}
+\verb|=>|
+\begin{alltt}
+((((lambda (_.0) (list _.0 (list 'quote _.0)))
+   '(lambda (_.0) (list _.0 (list 'quote _.0))))
+  (=/= ((_.0 closure)) ((_.0 list)) ((_.0 quote)))
+  (sym _.0)))
+\end{alltt}
 
-absento trick to generate more interesting Twines and Thrines
+\begin{alltt}
+> ((lambda (_.0) (list _.0 (list 'quote _.0)))
+    '(lambda (_.0) (list _.0 (list 'quote _.0))))
+((lambda (_.0) (list _.0 (list 'quote _.0)))
+  '(lambda (_.0) (list _.0 (list 'quote _.0))))
+\end{alltt}
+
+We replace \verb|_.0| with the arbitrary free variable name \verb|x| to produce the canonical LISP/Scheme Quine:
+
+\begin{alltt}
+((lambda (x) (list x (list 'quote x)))
+ '(lambda (x) (list x (list 'quote x))))
+\end{alltt}
+
+\begin{alltt}
+> ((lambda (x) (list x (list 'quote x)))
+   '(lambda (x) (list x (list 'quote x))))
+((lambda (x) (list x (list 'quote x)))
+  '(lambda (x) (list x (list 'quote x))))
+\end{alltt}
+
+Twines
+
+every Quine is trivially a Twine; we can add a disequality constraint to ensure \verb|p| and \verb|q| are distinct terms
+
+\begin{alltt}
+> (run 1 (p q)
+    (=/= p q)
+    (evalo p q)
+    (evalo q p))
+[TODO add the answer]
+\end{alltt}
+
+\footnote{I thank Larry Moss and the Indiana University Logic Symposium [TODO check the name of the symposium] for inviting me to give a talk where I demonstrated Quine generation, and where Larry suggested I tried generating Twines.}
+
+Thrines
+
+\begin{alltt}
+> (run 1 (p q r)
+    (=/= p q)
+    (=/= p r)
+    (=/= q r)    
+    (evalo p q)
+    (evalo q r)
+    (evalo r p))
+[TODO add the answer]
+\end{alltt}
+
+
+Structurally boring Quines, Twines, and Thrines
+
+just moving quotes around
+
+\verb|absento| trick to generate more interesting Quines, Twines, and Thrines
+
+\begin{alltt}
+> (run 1 (p q)
+    (absento p q)
+    (absento q p)    
+    (evalo p q)
+    (evalo q p))
+[TODO add the answer]
+\end{alltt}
+
+[similarly for Thrines]
+
+Revisiting our original Quine query with the \verb|absento| trick
+
+\begin{alltt}
+(run 1 (p)
+  (fresh (expr1 expr2)
+    (absento expr1 expr2)
+    (== `(,expr1 . ,expr2) p)
+    (evalo p p)))
+\end{alltt}
+\verb|=>|
+\begin{alltt}
+((((lambda (_.0)
+     (list (list 'lambda '(_.0) _.0) (list 'quote _.0)))
+   '(list (list 'lambda '(_.0) _.0) (list 'quote _.0)))
+  (=/= ((_.0 closure)) ((_.0 list)) ((_.0 quote)))
+  (sym _.0)))
+\end{alltt}
 
 
 \chapter{Using a two-list representation of the environment}% split environment representation

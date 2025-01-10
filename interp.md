@@ -1011,9 +1011,85 @@ grammar for the language we are interpreting
 
 McCarthy challenge given in 'A Micromanual for LISP'
 
-Quines, Twines, Thrines
+`(run``\ `{=latex}`1``\ `{=latex}`(e)``\ `{=latex}`(evalo``\ `{=latex}`e``\ `{=latex}`e))`
 
-absento trick to generate more interesting Twines and Thrines
+`=>`
+
+`((((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0))))`\
+`(=/=``\ `{=latex}`((_.0``\ `{=latex}`closure))``\ `{=latex}`((_.0``\ `{=latex}`list))``\ `{=latex}`((_.0``\ `{=latex}`quote)))`\
+`(sym``\ `{=latex}`_.0)))`
+
+`>``\ `{=latex}`((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0))))`\
+`((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0))))`
+
+We replace `_.0` with the arbitrary free variable name `x` to produce
+the canonical LISP/Scheme Quine:
+
+`((lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x)))`\
+`’(lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x))))`
+
+`>``\ `{=latex}`((lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x)))`\
+`’(lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x))))`\
+`((lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x)))`\
+`’(lambda``\ `{=latex}`(x)``\ `{=latex}`(list``\ `{=latex}`x``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`x))))`
+
+Twines
+
+every Quine is trivially a Twine; we can add a disequality constraint to
+ensure `p` and `q` are distinct terms
+
+`>``\ `{=latex}`(run``\ `{=latex}`1``\ `{=latex}`(p``\ `{=latex}`q)`\
+`(=/=``\ `{=latex}`p``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`p``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`q``\ `{=latex}`p))`\
+`[TODO``\ `{=latex}`add``\ `{=latex}`the``\ `{=latex}`answer]`
+
+[^8]
+
+Thrines
+
+`>``\ `{=latex}`(run``\ `{=latex}`1``\ `{=latex}`(p``\ `{=latex}`q``\ `{=latex}`r)`\
+`(=/=``\ `{=latex}`p``\ `{=latex}`q)`\
+`(=/=``\ `{=latex}`p``\ `{=latex}`r)`\
+`(=/=``\ `{=latex}`q``\ `{=latex}`r)`\
+`(evalo``\ `{=latex}`p``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`q``\ `{=latex}`r)`\
+`(evalo``\ `{=latex}`r``\ `{=latex}`p))`\
+`[TODO``\ `{=latex}`add``\ `{=latex}`the``\ `{=latex}`answer]`
+
+Structurally boring Quines, Twines, and Thrines
+
+just moving quotes around
+
+`absento` trick to generate more interesting Quines, Twines, and Thrines
+
+`>``\ `{=latex}`(run``\ `{=latex}`1``\ `{=latex}`(p``\ `{=latex}`q)`\
+`(absento``\ `{=latex}`p``\ `{=latex}`q)`\
+`(absento``\ `{=latex}`q``\ `{=latex}`p)`\
+`(evalo``\ `{=latex}`p``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`q``\ `{=latex}`p))`\
+`[TODO``\ `{=latex}`add``\ `{=latex}`the``\ `{=latex}`answer]`
+
+\[similarly for Thrines\]
+
+Revisiting our original Quine query with the `absento` trick
+
+`(run``\ `{=latex}`1``\ `{=latex}`(p)`\
+`(fresh``\ `{=latex}`(expr1``\ `{=latex}`expr2)`\
+`(absento``\ `{=latex}`expr1``\ `{=latex}`expr2)`\
+`(==``\ `{=latex}`‘(,expr1``\ `{=latex}`.``\ `{=latex}`,expr2)``\ `{=latex}`p)`\
+`(evalo``\ `{=latex}`p``\ `{=latex}`p)))`
+
+`=>`
+
+`((((lambda``\ `{=latex}`(_.0)`\
+`(list``\ `{=latex}`(list``\ `{=latex}`’lambda``\ `{=latex}`’(_.0)``\ `{=latex}`_.0)``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(list``\ `{=latex}`(list``\ `{=latex}`’lambda``\ `{=latex}`’(_.0)``\ `{=latex}`_.0)``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`(=/=``\ `{=latex}`((_.0``\ `{=latex}`closure))``\ `{=latex}`((_.0``\ `{=latex}`list))``\ `{=latex}`((_.0``\ `{=latex}`quote)))`\
+`(sym``\ `{=latex}`_.0)))`
 
 # Using a two-list representation of the environment
 
@@ -1076,3 +1152,8 @@ fast environment lookup for environments that are sufficiently ground
 [^7]: miniKanren also has the notions of expressions, values, and
     statements, and introduces the new notion of *terms*, a
     generalization of the notion of values. \[todo add crossref\]
+
+[^8]: I thank Larry Moss and the Indiana University Logic Symposium
+    \[TODO check the name of the symposium\] for inviting me to give a
+    talk where I demonstrated Quine generation, and where Larry
+    suggested I tried generating Twines.
