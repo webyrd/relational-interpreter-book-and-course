@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-09
+date: 2025-01-11
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -997,15 +997,21 @@ set-based test macro
 
 # A simple environment-passing Scheme interpreter in Scheme
 
-CBV lambda-calc plus quote and cons
+call-by-value (CBV) $\lambda$-calculus (variable reference,
+single-argument $lambda$, and procedure application), plus `quote` and
+`list`
 
-a list for env
+a-list for env
 
 tagged list to represent closure
 
 grammar for the language we are interpreting
 
 # Rewriting the simple environment-passing Scheme interpreter in miniKanren
+
+In this chapter we will translate the evaluator for the simple
+environment-passing interpreter from the previous chapter from a Scheme
+function to a miniKanren relation.
 
 # Quine time
 

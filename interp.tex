@@ -1052,9 +1052,9 @@ perhaps inclue alternative \verb|run| interafce/streaming/alternative set-based 
 
 \chapter{A simple environment-passing Scheme interpreter in Scheme}% simple Scheme-in-Scheme %%%%%%%%%%
 
-CBV lambda-calc plus quote and cons
+call-by-value (CBV) $\lambda$-calculus (variable reference, single-argument $lambda$, and procedure application), plus \verb|quote| and \verb|list|
 
-a list for env
+a-list for env
 
 tagged list to represent closure
 
@@ -1062,6 +1062,8 @@ grammar for the language we are interpreting
 
 
 \chapter{Rewriting the simple environment-passing Scheme interpreter in miniKanren}% simple Scheme-in-miniKanren %%%%%%%%%%
+
+In this chapter we will translate the evaluator for the simple environment-passing interpreter from the previous chapter from a Scheme function to a miniKanren relation.
 
 
 \chapter{Quine time}% Quine time %%%%%%%%%%%%%%%%%%%%%%
