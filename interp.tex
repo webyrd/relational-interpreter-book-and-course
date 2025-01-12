@@ -1054,7 +1054,11 @@ perhaps inclue alternative \verb|run| interafce/streaming/alternative set-based 
 
 call-by-value (CBV) $\lambda$-calculus (variable reference, single-argument $lambda$, and procedure application), plus \verb|quote| and \verb|list|
 
-a-list for env
+association-list representation of the environment
+
+empty initial environment
+
+\verb|list| is implemented as if it were a special form rather than as a variable bound, in a non-empty initial environment, to a procedure.  As a result, although \verb|list| can be shadowed, \verb|(list list)| results in an error that there is an attempt to reference an unbound variable \verb|list|.
 
 tagged list to represent closure
 
@@ -1064,6 +1068,66 @@ grammar for the language we are interpreting
 \chapter{Rewriting the simple environment-passing Scheme interpreter in miniKanren}% simple Scheme-in-miniKanren %%%%%%%%%%
 
 In this chapter we will translate the evaluator for the simple environment-passing interpreter from the previous chapter from a Scheme function to a miniKanren relation.
+
+\begin{alltt}
+(load "mk-vicare.scm")
+(load "mk.scm")
+\end{alltt}
+
+\begin{alltt}
+(defrel (evalo exp val)
+  (eval-expo exp '() val))
+
+(defrel (eval-expo exp env val)
+  (conde
+    ((fresh (v)
+       (== `(quote ,v) exp)
+       (not-in-envo 'quote env)
+       (absento 'closure v)
+       (== v val)))
+    ((fresh (a*)
+       (== `(list . ,a*) exp)
+       (not-in-envo 'list env)
+       (absento 'closure a*)
+       (proper-listo a* env val)))
+    ((symbolo exp) (lookupo exp env val))
+    ((fresh (rator rand x body env^ a)
+       (== `(,rator ,rand) exp)
+       (eval-expo rator env `(closure ,x ,body ,env^))
+       (eval-expo rand env a)
+       (eval-expo body `((,x . ,a) . ,env^) val)))
+    ((fresh (x body)
+       (== `(lambda (,x) ,body) exp)
+       (symbolo x)
+       (not-in-envo 'lambda env)
+       (== `(closure ,x ,body ,env) val)))))
+
+(defrel (not-in-envo x env)
+  (conde
+    ((fresh (y v rest)
+       (== `((,y . ,v) . ,rest) env)
+       (=/= y x)
+       (not-in-envo x rest)))
+    ((== '() env))))
+
+(defrel (proper-listo exp env val)
+  (conde
+    ((== '() exp)
+     (== '() val))
+    ((fresh (a d t-a t-d)
+       (== `(,a . ,d) exp)
+       (== `(,t-a . ,t-d) val)
+       (eval-expo a env t-a)
+       (proper-listo d env t-d)))))
+
+(defrel (lookupo x env t)
+  (fresh (rest y v)
+    (== `((,y . ,v) . ,rest) env)
+    (conde
+      ((== y x) (== v t))
+      ((=/= y x) (lookupo x rest t)))))
+\end{alltt}
+
 
 
 \chapter{Quine time}% Quine time %%%%%%%%%%%%%%%%%%%%%%
@@ -1168,8 +1232,125 @@ Revisiting our original Quine query with the \verb|absento| trick
 
 \chapter{Using a two-list representation of the environment}% split environment representation
 
+association-list representation of an environment where \verb|x| is mapped to the list \verb|(cat dog)| and \verb|y| is mapped to \verb|5|:
+\begin{alltt}
+((x . (cat dog))
+ (y . 5))
+\end{alltt}
+  
+``split'' two-list representation of the same environment:
+\begin{alltt}
+(x y) ; variables
+
+((cat dog) 6) ; values
+\end{alltt}
+
+\begin{alltt}
+(load "mk-vicare.scm")
+(load "mk.scm")
+\end{alltt}
+
+;; a-list env
+;; ((x . (cat dog))
+;;  (y . 5))
+
+;; split env
+;; (x y)
+;; ((cat dog) 6)
+
+\verb|absento| trick for lazy \verb|not-in-envo|
+
+;; (absento 'closure expr)
+
+;; (absento t1 t2)
+
+;; (not-in-envo 'lambda env)
+;; (absento 'lambda '(x y))
+
+\begin{alltt}
+(defrel (evalo exp val)
+  (eval-expo exp '(() . ()) val))
+
+(defrel (eval-expo exp env val)
+  (conde
+    ((fresh (v)
+       (== `(quote ,v) exp)
+       (not-in-envo 'quote env)
+       (absento 'closure v)
+       (== v val)))
+    ((fresh (a*)
+       (== `(list . ,a*) exp)
+       (not-in-envo 'list env)
+       (absento 'closure a*)
+       (proper-listo a* env val)))
+    ((symbolo exp) (lookupo exp env val))
+    ((fresh (rator rand x body env^ a env-vars^ env-vals^)
+       (== `(,rator ,rand) exp)
+       (== `(,env-vars^ . ,env-vals^) env^)
+       (eval-expo rator env `(closure ,x ,body ,env^))
+       (eval-expo rand env a)
+       (eval-expo body
+                  `((,x . env-vars^) . (,a . env-vals^))
+                  val)))
+    ((fresh (x body)
+       (== `(lambda (,x) ,body) exp)
+       (symbolo x)
+       (not-in-envo 'lambda env)
+       (== `(closure ,x ,body ,env) val)))))
+
+#|
+(defrel (not-in-envo x env)
+  (conde
+    ((fresh (y v rest)
+       (== `((,y . ,v) . ,rest) env)
+       (=/= y x)
+       (not-in-envo x rest)))
+    ((== '() env))))
+|#
+
+(defrel (not-in-envo x env)
+  (fresh (env-vars env-vals)
+    (== `(,env-vars . ,env-vals) env)
+    (absento x env-vars)))
+
+(defrel (proper-listo exp env val)
+  (conde
+    ((== '() exp)
+     (== '() val))
+    ((fresh (a d t-a t-d)
+       (== `(,a . ,d) exp)
+       (== `(,t-a . ,t-d) val)
+       (eval-expo a env t-a)
+       (proper-listo d env t-d)))))
+
+#|
+(defrel (lookupo x env t)
+  (fresh (rest y v)
+    (== `((,y . ,v) . ,rest) env)
+    (conde
+      ((== y x) (== v t))
+      ((=/= y x) (lookupo x rest t)))))
+|#
+
+(defrel (lookupo x env t)
+  (fresh (rest y v env-vars-rest env-vals-rest)
+    (== `((,y . ,env-vars-rest) . (,v . ,env-vals-rest)) env)
+    (conde
+      ((== y x) (== v t))
+      ((=/= y x) (lookupo x `(,env-vars-rest . ,env-vals-rest) t)))))
+\end{alltt}
+
 
 \chapter{Extending the interpreter to handle \texttt{append}}% extended append interpreter
+
+multi-argument and variadic \verb|lambda| and application 
+
+
+\chapter{Using a non-empty initial environment}%
+
+\verb|cons|, \verb|car|, \verb|cdr|, and \verb|null?| bound in the initial env to prims
+
+\verb|list| bound in the initial env to the closure that results from evaluating the variadic \verb|(lambda x x)|
 
 
 \chapter{Adding explicit errors}% explicit errors
