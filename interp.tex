@@ -1069,6 +1069,10 @@ grammar for the language we are interpreting
 
 In this chapter we will translate the evaluator for the simple environment-passing interpreter from the previous chapter from a Scheme function to a miniKanren relation.
 
+[TODO cite the code from the Quines interp in faster-miniKanren, and point to the 2012 SW paper on Quines]
+
+[TODO this interp uses defrel---do I want to stick with defrel, or use define + lambda?  Or maybe the book shows both (probably needs to show both at some point)]
+
 \begin{alltt}
 (load "mk-vicare.scm")
 (load "mk.scm")
@@ -1076,9 +1080,11 @@ In this chapter we will translate the evaluator for the simple environment-passi
 
 \begin{alltt}
 (defrel (evalo exp val)
-  (eval-expo exp '() val))
+  (eval-expro exp '() val))
+\end{alltt}
 
-(defrel (eval-expo exp env val)
+\begin{alltt}
+(defrel (eval-expro exp env val)
   (conde
     ((fresh (v)
        (== `(quote ,v) exp)
@@ -1093,15 +1099,17 @@ In this chapter we will translate the evaluator for the simple environment-passi
     ((symbolo exp) (lookupo exp env val))
     ((fresh (rator rand x body env^ a)
        (== `(,rator ,rand) exp)
-       (eval-expo rator env `(closure ,x ,body ,env^))
-       (eval-expo rand env a)
-       (eval-expo body `((,x . ,a) . ,env^) val)))
+       (eval-expro rator env `(closure ,x ,body ,env^))
+       (eval-expro rand env a)
+       (eval-expro body `((,x . ,a) . ,env^) val)))
     ((fresh (x body)
        (== `(lambda (,x) ,body) exp)
        (symbolo x)
        (not-in-envo 'lambda env)
        (== `(closure ,x ,body ,env) val)))))
-
+\end{alltt}
+  
+\begin{alltt}
 (defrel (not-in-envo x env)
   (conde
     ((fresh (y v rest)
@@ -1109,7 +1117,9 @@ In this chapter we will translate the evaluator for the simple environment-passi
        (=/= y x)
        (not-in-envo x rest)))
     ((== '() env))))
-
+\end{alltt}
+  
+\begin{alltt}
 (defrel (proper-listo exp env val)
   (conde
     ((== '() exp)
@@ -1117,9 +1127,11 @@ In this chapter we will translate the evaluator for the simple environment-passi
     ((fresh (a d t-a t-d)
        (== `(,a . ,d) exp)
        (== `(,t-a . ,t-d) val)
-       (eval-expo a env t-a)
+       (eval-expro a env t-a)
        (proper-listo d env t-d)))))
-
+\end{alltt}
+  
+\begin{alltt}
 (defrel (lookupo x env t)
   (fresh (rest y v)
     (== `((,y . ,v) . ,rest) env)
@@ -1245,11 +1257,6 @@ association-list representation of an environment where \verb|x| is mapped to th
 ((cat dog) 6) ; values
 \end{alltt}
 
-\begin{alltt}
-(load "mk-vicare.scm")
-(load "mk.scm")
-\end{alltt}
-
 ;; a-list env
 ;; ((x . (cat dog))
 ;;  (y . 5))
@@ -1267,71 +1274,37 @@ association-list representation of an environment where \verb|x| is mapped to th
 ;; (not-in-envo 'lambda env)
 ;; (absento 'lambda '(x y))
 
+[TODO do I want to make eval-expro representation-independent wrt environments?]
+
 \begin{alltt}
 (defrel (evalo exp val)
-  (eval-expo exp '(() . ()) val))
+  (eval-expro exp '(() . ()) val))
+\end{alltt}
 
-(defrel (eval-expo exp env val)
+\begin{alltt}  
+(defrel (eval-expro exp env val)
   (conde
-    ((fresh (v)
-       (== `(quote ,v) exp)
-       (not-in-envo 'quote env)
-       (absento 'closure v)
-       (== v val)))
-    ((fresh (a*)
-       (== `(list . ,a*) exp)
-       (not-in-envo 'list env)
-       (absento 'closure a*)
-       (proper-listo a* env val)))
-    ((symbolo exp) (lookupo exp env val))
+    ;; quote, list, and variable reference/lookup clauses elided
     ((fresh (rator rand x body env^ a env-vars^ env-vals^)
        (== `(,rator ,rand) exp)
        (== `(,env-vars^ . ,env-vals^) env^)
-       (eval-expo rator env `(closure ,x ,body ,env^))
-       (eval-expo rand env a)
-       (eval-expo body
+       (eval-expro rator env `(closure ,x ,body ,env^))
+       (eval-expro rand env a)
+       (eval-expro body
                   `((,x . env-vars^) . (,a . env-vals^))
                   val)))
-    ((fresh (x body)
-       (== `(lambda (,x) ,body) exp)
-       (symbolo x)
-       (not-in-envo 'lambda env)
-       (== `(closure ,x ,body ,env) val)))))
+    ;; lambda clause elided
+    ))
+\end{alltt}
 
-#|
-(defrel (not-in-envo x env)
-  (conde
-    ((fresh (y v rest)
-       (== `((,y . ,v) . ,rest) env)
-       (=/= y x)
-       (not-in-envo x rest)))
-    ((== '() env))))
-|#
-
+\begin{alltt}
 (defrel (not-in-envo x env)
   (fresh (env-vars env-vals)
     (== `(,env-vars . ,env-vals) env)
     (absento x env-vars)))
+\end{alltt}
 
-(defrel (proper-listo exp env val)
-  (conde
-    ((== '() exp)
-     (== '() val))
-    ((fresh (a d t-a t-d)
-       (== `(,a . ,d) exp)
-       (== `(,t-a . ,t-d) val)
-       (eval-expo a env t-a)
-       (proper-listo d env t-d)))))
-
-#|
-(defrel (lookupo x env t)
-  (fresh (rest y v)
-    (== `((,y . ,v) . ,rest) env)
-    (conde
-      ((== y x) (== v t))
-      ((=/= y x) (lookupo x rest t)))))
-|#
-
+\begin{alltt}
 (defrel (lookupo x env t)
   (fresh (rest y v env-vars-rest env-vals-rest)
     (== `((,y . ,env-vars-rest) . (,v . ,env-vals-rest)) env)

@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-12
+date: 2025-01-13
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -1020,13 +1020,20 @@ In this chapter we will translate the evaluator for the simple
 environment-passing interpreter from the previous chapter from a Scheme
 function to a miniKanren relation.
 
+\[TODO cite the code from the Quines interp in faster-miniKanren, and
+point to the 2012 SW paper on Quines\]
+
+\[TODO this interp uses defrel---do I want to stick with defrel, or use
+define + lambda? Or maybe the book shows both (probably needs to show
+both at some point)\]
+
 `(load``\ `{=latex}`"mk-vicare.scm")`\
 `(load``\ `{=latex}`"mk.scm")`
 
 `(defrel``\ `{=latex}`(evalo``\ `{=latex}`exp``\ `{=latex}`val)`\
-`(eval-expo``\ `{=latex}`exp``\ `{=latex}`’()``\ `{=latex}`val))`
+`(eval-expro``\ `{=latex}`exp``\ `{=latex}`’()``\ `{=latex}`val))`
 
-`(defrel``\ `{=latex}`(eval-expo``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val)`\
+`(defrel``\ `{=latex}`(eval-expro``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val)`\
 `(conde`\
 `((fresh``\ `{=latex}`(v)`\
 `(==``\ `{=latex}`‘(quote``\ `{=latex}`,v)``\ `{=latex}`exp)`\
@@ -1041,9 +1048,9 @@ function to a miniKanren relation.
 `((symbolo``\ `{=latex}`exp)``\ `{=latex}`(lookupo``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val))`\
 `((fresh``\ `{=latex}`(rator``\ `{=latex}`rand``\ `{=latex}`x``\ `{=latex}`body``\ `{=latex}`env^``\ `{=latex}`a)`\
 `(==``\ `{=latex}`‘(,rator``\ `{=latex}`,rand)``\ `{=latex}`exp)`\
-`(eval-expo``\ `{=latex}`rator``\ `{=latex}`env``\ `{=latex}`‘(closure``\ `{=latex}`,x``\ `{=latex}`,body``\ `{=latex}`,env^))`\
-`(eval-expo``\ `{=latex}`rand``\ `{=latex}`env``\ `{=latex}`a)`\
-`(eval-expo``\ `{=latex}`body``\ `{=latex}`‘((,x``\ `{=latex}`.``\ `{=latex}`,a)``\ `{=latex}`.``\ `{=latex}`,env^)``\ `{=latex}`val)))`\
+`(eval-expro``\ `{=latex}`rator``\ `{=latex}`env``\ `{=latex}`‘(closure``\ `{=latex}`,x``\ `{=latex}`,body``\ `{=latex}`,env^))`\
+`(eval-expro``\ `{=latex}`rand``\ `{=latex}`env``\ `{=latex}`a)`\
+`(eval-expro``\ `{=latex}`body``\ `{=latex}`‘((,x``\ `{=latex}`.``\ `{=latex}`,a)``\ `{=latex}`.``\ `{=latex}`,env^)``\ `{=latex}`val)))`\
 `((fresh``\ `{=latex}`(x``\ `{=latex}`body)`\
 `(==``\ `{=latex}`‘(lambda``\ `{=latex}`(,x)``\ `{=latex}`,body)``\ `{=latex}`exp)`\
 `(symbolo``\ `{=latex}`x)`\
@@ -1065,7 +1072,7 @@ function to a miniKanren relation.
 `((fresh``\ `{=latex}`(a``\ `{=latex}`d``\ `{=latex}`t-a``\ `{=latex}`t-d)`\
 `(==``\ `{=latex}`‘(,a``\ `{=latex}`.``\ `{=latex}`,d)``\ `{=latex}`exp)`\
 `(==``\ `{=latex}`‘(,t-a``\ `{=latex}`.``\ `{=latex}`,t-d)``\ `{=latex}`val)`\
-`(eval-expo``\ `{=latex}`a``\ `{=latex}`env``\ `{=latex}`t-a)`\
+`(eval-expro``\ `{=latex}`a``\ `{=latex}`env``\ `{=latex}`t-a)`\
 `(proper-listo``\ `{=latex}`d``\ `{=latex}`env``\ `{=latex}`t-d)))))`
 
 `(defrel``\ `{=latex}`(lookupo``\ `{=latex}`x``\ `{=latex}`env``\ `{=latex}`t)`\
@@ -1173,9 +1180,6 @@ the list `(cat dog)` and `y` is mapped to `5`:
 
 `((cat``\ `{=latex}`dog)``\ `{=latex}`6)``\ `{=latex}`;``\ `{=latex}`values`
 
-`(load``\ `{=latex}`"mk-vicare.scm")`\
-`(load``\ `{=latex}`"mk.scm")`
-
 ;; a-list env ;; ((x . (cat dog)) ;; (y . 5))
 
 ;; split env ;; (x y) ;; ((cat dog) 6)
@@ -1188,69 +1192,30 @@ the list `(cat dog)` and `y` is mapped to `5`:
 
 ;; (not-in-envo 'lambda env) ;; (absento 'lambda '(x y))
 
-`(defrel``\ `{=latex}`(evalo``\ `{=latex}`exp``\ `{=latex}`val)`\
-`(eval-expo``\ `{=latex}`exp``\ `{=latex}`’(()``\ `{=latex}`.``\ `{=latex}`())``\ `{=latex}`val))`
+\[TODO do I want to make eval-expro representation-independent wrt
+environments?\]
 
-`(defrel``\ `{=latex}`(eval-expo``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val)`\
+`(defrel``\ `{=latex}`(evalo``\ `{=latex}`exp``\ `{=latex}`val)`\
+`(eval-expro``\ `{=latex}`exp``\ `{=latex}`’(()``\ `{=latex}`.``\ `{=latex}`())``\ `{=latex}`val))`
+
+`(defrel``\ `{=latex}`(eval-expro``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val)`\
 `(conde`\
-`((fresh``\ `{=latex}`(v)`\
-`(==``\ `{=latex}`‘(quote``\ `{=latex}`,v)``\ `{=latex}`exp)`\
-`(not-in-envo``\ `{=latex}`’quote``\ `{=latex}`env)`\
-`(absento``\ `{=latex}`’closure``\ `{=latex}`v)`\
-`(==``\ `{=latex}`v``\ `{=latex}`val)))`\
-`((fresh``\ `{=latex}`(a*)`\
-`(==``\ `{=latex}`‘(list``\ `{=latex}`.``\ `{=latex}`,a*)``\ `{=latex}`exp)`\
-`(not-in-envo``\ `{=latex}`’list``\ `{=latex}`env)`\
-`(absento``\ `{=latex}`’closure``\ `{=latex}`a*)`\
-`(proper-listo``\ `{=latex}`a*``\ `{=latex}`env``\ `{=latex}`val)))`\
-`((symbolo``\ `{=latex}`exp)``\ `{=latex}`(lookupo``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val))`\
+`;;``\ `{=latex}`quote,``\ `{=latex}`list,``\ `{=latex}`and``\ `{=latex}`variable``\ `{=latex}`reference/lookup``\ `{=latex}`clauses``\ `{=latex}`elided`\
 `((fresh``\ `{=latex}`(rator``\ `{=latex}`rand``\ `{=latex}`x``\ `{=latex}`body``\ `{=latex}`env^``\ `{=latex}`a``\ `{=latex}`env-vars^``\ `{=latex}`env-vals^)`\
 `(==``\ `{=latex}`‘(,rator``\ `{=latex}`,rand)``\ `{=latex}`exp)`\
 `(==``\ `{=latex}`‘(,env-vars^``\ `{=latex}`.``\ `{=latex}`,env-vals^)``\ `{=latex}`env^)`\
-`(eval-expo``\ `{=latex}`rator``\ `{=latex}`env``\ `{=latex}`‘(closure``\ `{=latex}`,x``\ `{=latex}`,body``\ `{=latex}`,env^))`\
-`(eval-expo``\ `{=latex}`rand``\ `{=latex}`env``\ `{=latex}`a)`\
-`(eval-expo``\ `{=latex}`body`\
+`(eval-expro``\ `{=latex}`rator``\ `{=latex}`env``\ `{=latex}`‘(closure``\ `{=latex}`,x``\ `{=latex}`,body``\ `{=latex}`,env^))`\
+`(eval-expro``\ `{=latex}`rand``\ `{=latex}`env``\ `{=latex}`a)`\
+`(eval-expro``\ `{=latex}`body`\
 `‘((,x``\ `{=latex}`.``\ `{=latex}`env-vars^)``\ `{=latex}`.``\ `{=latex}`(,a``\ `{=latex}`.``\ `{=latex}`env-vals^))`\
 `val)))`\
-`((fresh``\ `{=latex}`(x``\ `{=latex}`body)`\
-`(==``\ `{=latex}`‘(lambda``\ `{=latex}`(,x)``\ `{=latex}`,body)``\ `{=latex}`exp)`\
-`(symbolo``\ `{=latex}`x)`\
-`(not-in-envo``\ `{=latex}`’lambda``\ `{=latex}`env)`\
-`(==``\ `{=latex}`‘(closure``\ `{=latex}`,x``\ `{=latex}`,body``\ `{=latex}`,env)``\ `{=latex}`val)))))`
-
-`#|`\
-`(defrel``\ `{=latex}`(not-in-envo``\ `{=latex}`x``\ `{=latex}`env)`\
-`(conde`\
-`((fresh``\ `{=latex}`(y``\ `{=latex}`v``\ `{=latex}`rest)`\
-`(==``\ `{=latex}'`((,y``\ `{=latex}`.``\ `{=latex}`,v)``\ `{=latex}`.``\ `{=latex}`,rest)``\ `{=latex}`env)`\
-`(=/=``\ `{=latex}`y``\ `{=latex}`x)`\
-`(not-in-envo``\ `{=latex}`x``\ `{=latex}`rest)))`\
-`((==``\ `{=latex}'`()``\ `{=latex}`env))))`\
-`|#`
+`;;``\ `{=latex}`lambda``\ `{=latex}`clause``\ `{=latex}`elided`\
+`))`
 
 `(defrel``\ `{=latex}`(not-in-envo``\ `{=latex}`x``\ `{=latex}`env)`\
 `(fresh``\ `{=latex}`(env-vars``\ `{=latex}`env-vals)`\
 `(==``\ `{=latex}`‘(,env-vars``\ `{=latex}`.``\ `{=latex}`,env-vals)``\ `{=latex}`env)`\
 `(absento``\ `{=latex}`x``\ `{=latex}`env-vars)))`
-
-`(defrel``\ `{=latex}`(proper-listo``\ `{=latex}`exp``\ `{=latex}`env``\ `{=latex}`val)`\
-`(conde`\
-`((==``\ `{=latex}`’()``\ `{=latex}`exp)`\
-`(==``\ `{=latex}`’()``\ `{=latex}`val))`\
-`((fresh``\ `{=latex}`(a``\ `{=latex}`d``\ `{=latex}`t-a``\ `{=latex}`t-d)`\
-`(==``\ `{=latex}`‘(,a``\ `{=latex}`.``\ `{=latex}`,d)``\ `{=latex}`exp)`\
-`(==``\ `{=latex}`‘(,t-a``\ `{=latex}`.``\ `{=latex}`,t-d)``\ `{=latex}`val)`\
-`(eval-expo``\ `{=latex}`a``\ `{=latex}`env``\ `{=latex}`t-a)`\
-`(proper-listo``\ `{=latex}`d``\ `{=latex}`env``\ `{=latex}`t-d)))))`
-
-`#|`\
-`(defrel``\ `{=latex}`(lookupo``\ `{=latex}`x``\ `{=latex}`env``\ `{=latex}`t)`\
-`(fresh``\ `{=latex}`(rest``\ `{=latex}`y``\ `{=latex}`v)`\
-`(==``\ `{=latex}`‘((,y``\ `{=latex}`.``\ `{=latex}`,v)``\ `{=latex}`.``\ `{=latex}`,rest)``\ `{=latex}`env)`\
-`(conde`\
-`((==``\ `{=latex}`y``\ `{=latex}`x)``\ `{=latex}`(==``\ `{=latex}`v``\ `{=latex}`t))`\
-`((=/=``\ `{=latex}`y``\ `{=latex}`x)``\ `{=latex}`(lookupo``\ `{=latex}`x``\ `{=latex}`rest``\ `{=latex}`t)))))`\
-`|#`
 
 `(defrel``\ `{=latex}`(lookupo``\ `{=latex}`x``\ `{=latex}`env``\ `{=latex}`t)`\
 `(fresh``\ `{=latex}`(rest``\ `{=latex}`y``\ `{=latex}`v``\ `{=latex}`env-vars-rest``\ `{=latex}`env-vals-rest)`\
