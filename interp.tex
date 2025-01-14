@@ -1064,6 +1064,70 @@ tagged list to represent closure
 
 grammar for the language we are interpreting
 
+\begin{alltt}
+(load "pmatch.scm")
+\end{alltt}
+
+[TODO make sure I explain MIT vs Indiana syntax for \verb|define|]
+
+\begin{alltt}
+(define (eval expr)
+  (eval-expr expr '()))
+\end{alltt}
+
+\begin{alltt}
+(define (eval-expr expr env)
+  (match expr
+    ((quote ,v)
+     (guard (not-in-env? 'quote env))
+     v)
+    ((list . ,e*)
+     (guard (not-in-env? 'list env))
+     (eval-list e* env))
+    (,x
+     (guard (symbolo? x))
+     (lookup x env))
+    ((,rator ,rand)
+     (let ((a (eval-expr rand env)))
+       (pmatch (eval-expr rator env)
+         ((closure ,x ,body ,env^)
+          (guard (symbol? x))
+          (eval-expr body `((,x . ,a) . ,env^))))))
+    ((lambda (,x) ,body)
+     (guard (and (symbol? x)
+                 (not-in-env? 'lambda env)))
+     `(closure ,x ,body ,env))))
+\end{alltt}
+
+\begin{alltt}
+(define (not-in-env? x env)
+  (pmatch env
+    (((,y . ,v) . ,env^)
+     (if (equal? y x) ;; TODO eq? vs eqv? vs equal?, with equal? being semantically closest to ==
+         #f
+         (not-in-env? x env^)))
+    (() #t))) ;; TODO empty env clause comes second; Dijkstra guard, and all that
+\end{alltt}
+
+\begin{alltt}
+(define (eval-list expr env)
+  (pmatch expr
+    (() '())
+    ((,a . ,d)
+     (let ((t-a (eval-expr a env))
+           (t-d (eval-list d env)))
+       `(,t-a . ,t-d)))))
+\end{alltt}
+
+\begin{alltt}
+(define (lookup x env)
+  (pmatch env
+    (() (error 'lookup "unbound variable")) ;; TODO make sure error is introduced, and make error message nicer
+    (((,y . ,v) . ,env^)
+     (if (equal? y x)
+         v
+         (lookup x env^)))))
+\end{alltt}
 
 \chapter{Rewriting the simple environment-passing Scheme interpreter in miniKanren}% simple Scheme-in-miniKanren %%%%%%%%%%
 
@@ -1079,31 +1143,31 @@ In this chapter we will translate the evaluator for the simple environment-passi
 \end{alltt}
 
 \begin{alltt}
-(defrel (evalo exp val)
-  (eval-expro exp '() val))
+(defrel (evalo expr val)
+  (eval-expro expr '() val))
 \end{alltt}
 
 \begin{alltt}
-(defrel (eval-expro exp env val)
+(defrel (eval-expro expr env val)
   (conde
     ((fresh (v)
-       (== `(quote ,v) exp)
+       (== `(quote ,v) expr)
        (not-in-envo 'quote env)
-       (absento 'closure v)
+       (absento 'closure v) ;; TODO discuss the tradeoffs of moving this absento to evalo
        (== v val)))
-    ((fresh (a*)
-       (== `(list . ,a*) exp)
+    ((fresh (e*)
+       (== `(list . ,e*) expr)
        (not-in-envo 'list env)
-       (absento 'closure a*)
-       (proper-listo a* env val)))
-    ((symbolo exp) (lookupo exp env val))
+       (absento 'closure e*) ;; TODO is this absento really needed, if we have absento for quote?
+       (eval-listo e* env val)))
+    ((symbolo expr) (lookupo expr env val))
     ((fresh (rator rand x body env^ a)
-       (== `(,rator ,rand) exp)
+       (== `(,rator ,rand) expr)
        (eval-expro rator env `(closure ,x ,body ,env^))
        (eval-expro rand env a)
        (eval-expro body `((,x . ,a) . ,env^) val)))
     ((fresh (x body)
-       (== `(lambda (,x) ,body) exp)
+       (== `(lambda (,x) ,body) expr)
        (symbolo x)
        (not-in-envo 'lambda env)
        (== `(closure ,x ,body ,env) val)))))
@@ -1112,32 +1176,32 @@ In this chapter we will translate the evaluator for the simple environment-passi
 \begin{alltt}
 (defrel (not-in-envo x env)
   (conde
-    ((fresh (y v rest)
-       (== `((,y . ,v) . ,rest) env)
+    ((fresh (y v env^)
+       (== `((,y . ,v) . ,env^) env)
        (=/= y x)
-       (not-in-envo x rest)))
+       (not-in-envo x env^)))
     ((== '() env))))
 \end{alltt}
   
 \begin{alltt}
-(defrel (proper-listo exp env val)
+(defrel (eval-listo expr env val)
   (conde
-    ((== '() exp)
+    ((== '() expr)
      (== '() val))
     ((fresh (a d t-a t-d)
-       (== `(,a . ,d) exp)
+       (== `(,a . ,d) expr)
        (== `(,t-a . ,t-d) val)
        (eval-expro a env t-a)
-       (proper-listo d env t-d)))))
+       (eval-listo d env t-d)))))
 \end{alltt}
   
 \begin{alltt}
 (defrel (lookupo x env t)
-  (fresh (rest y v)
-    (== `((,y . ,v) . ,rest) env)
+  (fresh (y v env^)
+    (== `((,y . ,v) . ,env^) env)
     (conde
       ((== y x) (== v t))
-      ((=/= y x) (lookupo x rest t)))))
+      ((=/= y x) (lookupo x env^ t)))))
 \end{alltt}
 
 
@@ -1277,21 +1341,21 @@ association-list representation of an environment where \verb|x| is mapped to th
 [TODO do I want to make eval-expro representation-independent wrt environments?]
 
 \begin{alltt}
-(defrel (evalo exp val)
-  (eval-expro exp '(() . ()) val))
+(defrel (evalo expr val)
+  (eval-expro expr '(() . ()) val))
 \end{alltt}
 
 \begin{alltt}  
-(defrel (eval-expro exp env val)
+(defrel (eval-expro expr env val)
   (conde
     ;; quote, list, and variable reference/lookup clauses elided
-    ((fresh (rator rand x body env^ a env-vars^ env-vals^)
-       (== `(,rator ,rand) exp)
-       (== `(,env-vars^ . ,env-vals^) env^)
+    ((fresh (rator rand body env^ a x x* v*)
+       (== `(,rator ,rand) expr)
+       (== `(,x* . ,v*) env^)
        (eval-expro rator env `(closure ,x ,body ,env^))
        (eval-expro rand env a)
        (eval-expro body
-                  `((,x . env-vars^) . (,a . env-vals^))
+                  `((,x . x*) . (,a . v*))
                   val)))
     ;; lambda clause elided
     ))
@@ -1299,18 +1363,20 @@ association-list representation of an environment where \verb|x| is mapped to th
 
 \begin{alltt}
 (defrel (not-in-envo x env)
-  (fresh (env-vars env-vals)
-    (== `(,env-vars . ,env-vals) env)
-    (absento x env-vars)))
+  (fresh (x* v*)
+    (== `(,x* . ,v*) env)
+    (absento x x*)))
 \end{alltt}
+
+[TODO discuss tradeoffs between asserting (symbolo x) in these helper relations---how stand-alone do we want them?]
 
 \begin{alltt}
 (defrel (lookupo x env t)
-  (fresh (rest y v env-vars-rest env-vals-rest)
-    (== `((,y . ,env-vars-rest) . (,v . ,env-vals-rest)) env)
+  (fresh (y x* v v*)
+    (== `((,y . ,x*) . (,v . ,v*)) env)
     (conde
       ((== y x) (== v t))
-      ((=/= y x) (lookupo x `(,env-vars-rest . ,env-vals-rest) t)))))
+      ((=/= y x) (lookupo x `(,x* . ,v*) t)))))
 \end{alltt}
 
 
