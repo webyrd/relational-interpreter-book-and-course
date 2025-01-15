@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-14
+date: 2025-01-15
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -1245,9 +1245,6 @@ the list `(cat dog)` and `y` is mapped to `5`:
 
 ;; (not-in-envo 'lambda env) ;; (absento 'lambda '(x y))
 
-\[TODO do I want to make eval-expro representation-independent wrt
-environments?\]
-
 `(defrel``\ `{=latex}`(evalo``\ `{=latex}`expr``\ `{=latex}`val)`\
 `(eval-expro``\ `{=latex}`expr``\ `{=latex}`’(()``\ `{=latex}`.``\ `{=latex}`())``\ `{=latex}`val))`
 
@@ -1282,9 +1279,14 @@ relations---how stand-alone do we want them?\]
 
 # Extending the interpreter to handle `append`
 
-multi-argument and variadic `lambda` and application
+add `cons`, `car`, `cdr`, `null?`, and `if`
+
+extend `lambda` and application to handle multiple arguments and
+variadic
 
 # Using a non-empty initial environment
+
+new case to handle prim app rather than user-defined closure app
 
 `cons`, `car`, `cdr`, and `null?` bound in the initial env to prims
 

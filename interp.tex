@@ -1338,8 +1338,6 @@ association-list representation of an environment where \verb|x| is mapped to th
 ;; (not-in-envo 'lambda env)
 ;; (absento 'lambda '(x y))
 
-[TODO do I want to make eval-expro representation-independent wrt environments?]
-
 \begin{alltt}
 (defrel (evalo expr val)
   (eval-expro expr '(() . ()) val))
@@ -1380,12 +1378,17 @@ association-list representation of an environment where \verb|x| is mapped to th
 \end{alltt}
 
 
+
 \chapter{Extending the interpreter to handle \texttt{append}}% extended append interpreter
 
-multi-argument and variadic \verb|lambda| and application 
+add \verb|cons|, \verb|car|, \verb|cdr|, \verb|null?|, and \verb|if|
+
+extend \verb|lambda| and application to handle multiple arguments and variadic 
 
 
 \chapter{Using a non-empty initial environment}%
+
+new case to handle prim app rather than user-defined closure app
 
 \verb|cons|, \verb|car|, \verb|cdr|, and \verb|null?| bound in the initial env to prims
 
