@@ -167,7 +167,7 @@ grammar for the language we are interpreting
 `(eval-expr``\ `{=latex}`expr``\ `{=latex}`’()))`
 
 `(define``\ `{=latex}`(eval-expr``\ `{=latex}`expr``\ `{=latex}`env)`\
-`(match``\ `{=latex}`expr`\
+`(pmatch``\ `{=latex}`expr`\
 `((quote``\ `{=latex}`,v)`\
 `(guard``\ `{=latex}`(not-in-env?``\ `{=latex}`’quote``\ `{=latex}`env))`\
 `v)`\

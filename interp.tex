@@ -197,7 +197,7 @@ grammar for the language we are interpreting
 
 \begin{alltt}
 (define (eval-expr expr env)
-  (match expr
+  (pmatch expr
     ((quote ,v)
      (guard (not-in-env? 'quote env))
      v)
