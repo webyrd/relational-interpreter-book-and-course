@@ -88,6 +88,8 @@ By writing interpreters as relations, and by using the implicit constraint solvi
 
 \section{What you need to know to read this book}
 
+This book assumes you are familiar with the basics of Scheme or Racket, and are comfortable with the ideas of functionals programming.  The book also assumes you understand the notions of evaluation order of expressions, lexical scope, environments, environment-passing interpreters.
+
 [TODO add topics that the reader should know, including Scheme, miniKanren, lexical scope, environment-passing interpreters, etc]
 
 [TODO add pointers to resources]
@@ -518,18 +520,25 @@ new case to handle prim app rather than user-defined closure app
 \chapter{Adding explicit errors}% explicit errors
 
 
+\chapter{Angelic execution}% angelic execution
+
+[TODO look at my code from PolyConf 2015, which includes an interpreter for an imperative language, along with angelic execution]
+
+\chapter{Adding mutation}% mutation
+
+[TODO look at my code from PolyConf 2015, which includes an interpreter for an imperative language, along with angelic execution]
+
+support \verb|set!| (can we get away with supporting \verb|set!| without adding a store?)
+
+support mutiple pairs and have an explicit store
+
+
 \chapter{Adding delimited control operators}%
 
 delimited continuations and/or effect handlers---can we do so in such a way that avoids ``breaking the wires''?
 
 talk about the problem with \verb|call/cc| and breaking the wires
 
-
-\chapter{Adding mutation}% mutation
-
-support \verb|set!| (can we get away with supporting \verb|set!| without adding a store?)
-
-support mutiple pairs and have an explicit store
 
 
 \chapter{Writing a parser as a relation}% relational parser

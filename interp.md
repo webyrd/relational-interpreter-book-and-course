@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-16
+date: 2025-01-17
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -48,6 +48,12 @@ handles errors, and ask `faster-miniKanren` to find inputs to the
 program that trigger these errors.[^2]
 
 ## What you need to know to read this book
+
+This book assumes you are familiar with the basics of Scheme or Racket,
+and are comfortable with the ideas of functionals programming. The book
+also assumes you understand the notions of evaluation order of
+expressions, lexical scope, environments, environment-passing
+interpreters.
 
 \[TODO add topics that the reader should know, including Scheme,
 miniKanren, lexical scope, environment-passing interpreters, etc\]
@@ -440,19 +446,27 @@ evaluating the variadic `(lambda x x)`
 
 # Adding explicit errors
 
+# Angelic execution
+
+\[TODO look at my code from PolyConf 2015, which includes an interpreter
+for an imperative language, along with angelic execution\]
+
+# Adding mutation
+
+\[TODO look at my code from PolyConf 2015, which includes an interpreter
+for an imperative language, along with angelic execution\]
+
+support `set!` (can we get away with supporting `set!` without adding a
+store?)
+
+support mutiple pairs and have an explicit store
+
 # Adding delimited control operators
 
 delimited continuations and/or effect handlers---can we do so in such a
 way that avoids "breaking the wires"?
 
 talk about the problem with `call/cc` and breaking the wires
-
-# Adding mutation
-
-support `set!` (can we get away with supporting `set!` without adding a
-store?)
-
-support mutiple pairs and have an explicit store
 
 # Writing a parser as a relation
 
