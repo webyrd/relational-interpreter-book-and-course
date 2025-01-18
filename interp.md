@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-17
+date: 2025-01-18
 title: |
   Relational Interpreters in miniKanren\
    \
