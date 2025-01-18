@@ -370,6 +370,53 @@ Revisiting our original Quine query with the `absento` trick
 `(=/=``\ `{=latex}`((_.0``\ `{=latex}`closure))``\ `{=latex}`((_.0``\ `{=latex}`list))``\ `{=latex}`((_.0``\ `{=latex}`quote)))`\
 `(sym``\ `{=latex}`_.0)))`
 
+Gary P. Thompson II's Quine page
+(<http://www.nyx.net/~gthompso/quine.htm>) also describes *Quine
+Generating Programs* (<http://www.nyx.net/~gthompso/self_gener.txt>):
+
+> It is possible (and actually in some cases easier) to write a program
+> which outputs another program which is itself a quine.
+
+using `q.scm` from faster-miniKanren:
+
+`(run``\ `{=latex}`1``\ `{=latex}`(nq``\ `{=latex}`q)`\
+`(=/=``\ `{=latex}`q``\ `{=latex}`nq)`\
+`(evalo``\ `{=latex}`nq``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`q``\ `{=latex}`q))`\
+`=>`\
+`(((’((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0))))`\
+`((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))))`\
+`(=/=``\ `{=latex}`((_.0``\ `{=latex}`closure))``\ `{=latex}`((_.0``\ `{=latex}`list))``\ `{=latex}`((_.0``\ `{=latex}`quote)))`\
+`(sym``\ `{=latex}`_.0)))`
+
+`(run``\ `{=latex}`1``\ `{=latex}`(nq``\ `{=latex}`q)`\
+`(absento``\ `{=latex}`q``\ `{=latex}`nq)`\
+`(evalo``\ `{=latex}`nq``\ `{=latex}`q)`\
+`(evalo``\ `{=latex}`q``\ `{=latex}`q))`\
+`=>`\
+`((((list`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`”(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0))))`\
+`((lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))`\
+`’(lambda``\ `{=latex}`(_.0)``\ `{=latex}`(list``\ `{=latex}`_.0``\ `{=latex}`(list``\ `{=latex}`’quote``\ `{=latex}`_.0)))))`\
+`(=/=``\ `{=latex}`((_.0``\ `{=latex}`closure))``\ `{=latex}`((_.0``\ `{=latex}`list))``\ `{=latex}`((_.0``\ `{=latex}`quote)))`\
+`(sym``\ `{=latex}`_.0)))`
+
+\[TODO: challenge to myself: generate a Kimian self-rep
+(<http://www.nyx.net/~gthompso/self_kim.txt>)
+
+> Kimian self-rep, like quines, got it's name from Godel Escher Bach. A
+> Kimian 'program' is actually the error produced by the system when it
+> encounters the code. Kimian self reps are therefore very
+> system-specific, and even implementation specific.
+
+I want to add errors to the interp, any way. Once I've added errors, I
+should in theory be able to synthesize Kimian self-reps. Try it! And
+then move this description and code to the chapter that adds errors to
+the interp. \]
+
 # Using a two-list representation of the environment
 
 association-list representation of an environment where `x` is mapped to

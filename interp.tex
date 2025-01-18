@@ -423,6 +423,57 @@ Revisiting our original Quine query with the \verb|absento| trick
 \end{alltt}
 
 
+Gary P. Thompson II's Quine page (\url{http://www.nyx.net/~gthompso/quine.htm}) also describes \emph{Quine Generating Programs} (\url{http://www.nyx.net/~gthompso/self_gener.txt}):
+
+\begin{quote}
+It is possible (and actually in some cases easier) to write a program which outputs another program which is itself a quine.
+\end{quote}
+
+using \verb|q.scm| from faster-miniKanren:
+
+\begin{alltt}
+(run 1 (nq q)
+  (=/= q nq)
+  (evalo nq q)
+  (evalo q q))
+=>
+((('((lambda (_.0) (list _.0 (list 'quote _.0)))
+     '(lambda (_.0) (list _.0 (list 'quote _.0))))
+   ((lambda (_.0) (list _.0 (list 'quote _.0)))
+    '(lambda (_.0) (list _.0 (list 'quote _.0)))))
+  (=/= ((_.0 closure)) ((_.0 list)) ((_.0 quote)))
+  (sym _.0)))
+\end{alltt}
+
+\begin{alltt}
+(run 1 (nq q)
+  (absento q nq)
+  (evalo nq q)
+  (evalo q q))
+=>
+((((list
+     '(lambda (_.0) (list _.0 (list 'quote _.0)))
+     ''(lambda (_.0) (list _.0 (list 'quote _.0))))
+   ((lambda (_.0) (list _.0 (list 'quote _.0)))
+    '(lambda (_.0) (list _.0 (list 'quote _.0)))))
+  (=/= ((_.0 closure)) ((_.0 list)) ((_.0 quote)))
+  (sym _.0)))
+\end{alltt}
+
+
+[TODO: challenge to myself: generate a Kimian self-rep (\url{http://www.nyx.net/~gthompso/self_kim.txt})
+
+\begin{quote}
+Kimian self-rep, like quines, got it's name from Godel Escher Bach.  A
+Kimian 'program' is actually the error produced by the system when it
+encounters the code.  Kimian self reps are therefore very system-specific,
+and even implementation specific.
+\end{quote}
+
+I want to add errors to the interp, any way.  Once I've added errors, I should in theory be able to synthesize Kimian self-reps.  Try it!  And then move this description and code to the chapter that adds errors to the interp.
+]
+
+
 \chapter{Using a two-list representation of the environment}% split environment representation
 
 association-list representation of an environment where \verb|x| is mapped to the list \verb|(cat dog)| and \verb|y| is mapped to \verb|5|:
