@@ -417,6 +417,10 @@ should in theory be able to synthesize Kimian self-reps. Try it! And
 then move this description and code to the chapter that adds errors to
 the interp. \]
 
+\[TODO: play with the ideas in this other Quines page
+<http://www.madore.org/~david/computers/quine.html> (thanks to Nada Amin
+for the pointer to this page, which I had forgotten about)\]
+
 # Using a two-list representation of the environment
 
 association-list representation of an environment where `x` is mapped to
