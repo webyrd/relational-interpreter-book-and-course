@@ -556,7 +556,7 @@ add \verb|cons|, \verb|car|, \verb|cdr|, \verb|null?|, and \verb|if|
 extend \verb|lambda| and application to handle multiple arguments and variadic 
 
 
-\chapter{Using a non-empty initial environment}%
+\chapter{Using a non-empty initial environment}% non-empty initial env
 
 new case to handle prim app rather than user-defined closure app
 
@@ -567,6 +567,11 @@ new case to handle prim app rather than user-defined closure app
 
 \chapter{Adding explicit errors}% explicit errors
 
+So far our interpreters handle Scheme errors implicitly by failing to produce a result, rather than producing an explicit error.  This implicit representation of errors has advantages, in both keeping the implementation code simple and in performance/fail-fast behavior.
+
+[TODO see the code and comments in \verb|mk-daily/2025_01_19| --- this code needs to be updated to use non-empty initial environment, to avoid unbound variable errors for built-ins, such as \verb|(error (unbound variable lambda))|]
+
+[TODO discuss disadvantage of threading through values monadically instead of lexically, esp. regarding losing fail-fast behavior, breaking the wires, and losing flexibility in reordering conjuncts]
 
 \chapter{Angelic execution}% angelic execution
 

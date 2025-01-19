@@ -1,7 +1,7 @@
 ---
 author:
 - William E. Byrd
-date: 2025-01-18
+date: 2025-01-19
 title: |
   Relational Interpreters in miniKanren\
    \
@@ -496,6 +496,20 @@ new case to handle prim app rather than user-defined closure app
 evaluating the variadic `(lambda x x)`
 
 # Adding explicit errors
+
+So far our interpreters handle Scheme errors implicitly by failing to
+produce a result, rather than producing an explicit error. This implicit
+representation of errors has advantages, in both keeping the
+implementation code simple and in performance/fail-fast behavior.
+
+\[TODO see the code and comments in `mk-daily/2025_01_19` --- this code
+needs to be updated to use non-empty initial environment, to avoid
+unbound variable errors for built-ins, such as
+`(error (unbound variable lambda))`\]
+
+\[TODO discuss disadvantage of threading through values monadically
+instead of lexically, esp. regarding losing fail-fast behavior, breaking
+the wires, and losing flexibility in reordering conjuncts\]
 
 # Angelic execution
 
